@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canal de Denuncias</title>
+    <link rel="shortcut icon" href="https://home.hcmfront.com/hubfs/favicon@3x.png">
+    <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite('resources/css/app.css')
+    <style>
+        body {
+            font-family: 'Maven Pro', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900 antialiased">
+
+<nav class="bg-white shadow-md p-6 flex justify-between items-center">
+    <div>
+        <img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Logo" class="h-12">
+    </div>
+    <div>
+        @if (Route::has('login'))
+            <div class="space-x-4">
+                @auth
+                    <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:text-blue-600 font-semibold">Dashboard</a>
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><i class="fa-solid fa-right-to-bracket"></i>Log in</a>
+
+                    {{--@if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="text-gray-600 hover:text-blue-600 font-semibold">Register</a>
+                    @endif--}}
+                @endauth
+            </div>
+        @endif
+    </div>
+</nav>
+<div class="text-4xl">
+    <p class="text-gray-700 mt-8 text-center font-bold">Canal de Denuncias</p>
+</div>
+<div class="container mx-auto p-6 mt-8 flex flex-col md:flex-row">
+    <!-- Left Column -->
+    <div class="md:w-1/2 md:pr-8">
+        <p class="text-gray-700">
+            <b>En [Nombre de Empresa] tu voz cuenta: Denuncia segura y confidencial</b><br>
+            ¿Qué es la Ley Karin?<br>
+            La Ley 21.643 tiene por objeto prevenir, investigar y sancionar el acoso laboral, el acoso
+            sexual, así como la violencia en el trabajo, garantizando los derechos de las víctimas y
+            facilitando el acceso a la justicia.<br>
+            Presenta tu denuncia de forma fácil y segura. Nuestro portal te brinda un espacio
+            confidencial para que puedas expresar lo ocurrido.<br>
+            <b>¿Cómo presentar una denuncia?</b><br>
+            1) Completa un sencillo formulario donde podrás describir detalladamente lo sucedido.<br>
+            2) Selecciona la categoría que mejor se ajuste a tu situación para agilizar el proceso.<br>
+            3) Puedes adjuntar documentos, fotografías u otros archivos que puedan respaldar tu
+            denuncia (opcional).<br>
+            4) Al finalizar, recibirás un código único que te permitirá hacer seguimiento a tu denuncia
+            en cualquier momento. <b>¡Guárdalo en un lugar seguro!</b><br>
+            Tu denuncia es importante. Cada caso es revisado con la mayor confidencialidad y se
+            toman las medidas necesarias para proteger tu identidad.<br>
+            <b>¡No dudes en denunciar! Tu voz es fundamental para erradicar el acoso y la
+                violencia</b>
+        </p>
+    </div>
+
+    <!-- Right Column -->
+    <div class="md:w-1/2 md:pl-8 mt-6 md:mt-0">
+        <p class="text-gray-700 text-4xl">Ingresa nueva denuncia</p>
+        <button type="button" onclick="window.location.href='{{ route('denuncia') }}'" class="mt-3 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+            Continuar
+        </button>
+        <p class="text-gray-700 mt-8 text-4xl">Revisa el estado de tu denuncia</p>
+        <p class="text-gray-700">Ingresa el número y clave proporcionada.</p>
+        <input type="text" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Numero de denuncia">
+        <input type="email" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Clave">
+        <button type="button" class="mt-3 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Consultar</button>
+        <!-- Agrega más inputs si es necesario -->
+    </div>
+</div>
+{{debugbar()->info(get_defined_vars())}}
+</body>
+</html>
+
+{{--
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>{Cliente} - Canal de Denuncias</title>
+
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap" rel="stylesheet">
+
+    </head>
+    <body class="antialiased">
+        <div class="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+            @if (Route::has('login'))
+                <div class="sm:fixed sm:top-0 sm:right-0 p-6 text-right z-10">
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Log in1</a>
+
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="ml-4 font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Register</a>
+                        @endif
+                    @endauth
+                </div>
+            @endif
+        </div>
+    </body>
+</html>
+--}}
