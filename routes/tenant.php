@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\App\TenantSettingController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\MenuController;
+use App\Http\Controllers\DenunciaController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\UserController;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -36,10 +41,39 @@ Route::middleware([
         return view('app.welcome');
     });
 
+    Route::get('/api/employees', function () {
+        $response = Http::withHeaders([
+            'Authorization' => 'Token ' . tenant()->api_key,
+        ])->get('https://api.hcmfront.com/v1/employee/');
 
-    Route::get('/dashboard', function () {
+        return $response->json();
+    });
+
+    Route::get('/denuncia/{tenant_id}/create', [DenunciaController::class, 'create'])->name('denuncia.create');
+    Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
+    Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
+
+    Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
+    Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
+    Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
+    //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
+    Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
+    Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
+    Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
+    Route::get('/formulario', [MenuController::class, 'formulario'])->name('formulario.index');
+    Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
+    });
+
+
+    /*Route::get('/dashboard', function () {
         return view('app.dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    })->middleware(['auth', 'verified'])->name('dashboard');*/
+    Route::get('/dashboard', [MenuController::class, 'index'])
+        ->middleware(['auth', 'verified'])
+        ->name('dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -48,8 +82,31 @@ Route::middleware([
 
         Route::group(['middleware' => ['role:admin']], function () {
             Route::resource('users', UserController::class);
+            Route::resource('questions', QuestionController::class);
+            Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create'); // GET para mostrar el formulario
+            Route::post('questions', [QuestionController::class, 'store'])->name('questions.store');         // POST para almacenar los datos
+            Route::post('questions/update-order', [QuestionController::class, 'updateOrder'])->name('questions.updateOrder');
+            Route::delete('questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+            Route::get('questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+            Route::put('questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+
+            //Route::resource('opciones', TenantSettingController::class);
+            // Ruta para listar las configuraciones (index)
+            Route::get('/opciones/vars', [TenantSettingController::class, 'index'])->name('app.opciones.vars');
+            // Ruta para crear una nueva configuración (create)
+            Route::get('/opciones/create', [TenantSettingController::class, 'create'])->name('app.opciones.create');
+            // Ruta para almacenar una nueva configuración (store)
+            Route::post('/opciones', [TenantSettingController::class, 'store'])->name('app.opciones.store');
+            // Ruta para editar una configuración existente (edit)
+            Route::get('/opciones/{tenantSetting}/edit', [TenantSettingController::class, 'edit'])->name('app.opciones.edit');
+            // Ruta para actualizar una configuración existente (update)
+            Route::put('/opciones/{tenantSetting}', [TenantSettingController::class, 'update'])->name('app.opciones.update');
+            // Ruta para eliminar una configuración (destroy)
+            Route::delete('/opciones/{tenantSetting}', [TenantSettingController::class, 'destroy'])->name('app.opciones.destroy');
+
         });
     });
+
 
     require __DIR__ . '/tenant-auth.php';
 });

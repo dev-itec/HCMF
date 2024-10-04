@@ -19,9 +19,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/denuncia', function () {
+/*Route::get('/denuncia', function () {
     return view('denuncia.create');
-})->name('denuncia');
+})->name('denuncia');*/
+
+/*Route::get('/status', function () {
+    return view('status.index');
+})->name('status');*/
 
 Route::get('/dashboard', function () {
     return view('dashboard');

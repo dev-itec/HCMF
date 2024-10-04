@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedOnDomainException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -25,6 +26,10 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+        $this->renderable(function (TenantCouldNotBeIdentifiedOnDomainException $e, $request) {
+            // Retornar una vista personalizada
+            return response()->view('errors.no-tenant', [], 404);
         });
     }
 }

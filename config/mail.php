@@ -45,7 +45,10 @@ return [
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
-
+        'mailersend' => [
+            'transport' => 'mailersend',
+            'api_key' => env('MAILERSEND_API_KEY'),
+        ],
         'ses' => [
             'transport' => 'ses',
         ],

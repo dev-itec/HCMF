@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b51621dd4052ac197889011b7fd62f04",
+    "content-hash": "1845604d3acbbac5ae659fe5869a0a1e",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -2081,16 +2081,16 @@
         },
         {
             "name": "mailersend/laravel-driver",
-            "version": "v2.6.1",
+            "version": "v2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mailersend/mailersend-laravel-driver.git",
-                "reference": "5a6f99aace8d2208c39357dca5da2b23012783bc"
+                "reference": "dd465077e89b903fe1dcc75c92203c7449ef57ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mailersend/mailersend-laravel-driver/zipball/5a6f99aace8d2208c39357dca5da2b23012783bc",
-                "reference": "5a6f99aace8d2208c39357dca5da2b23012783bc",
+                "url": "https://api.github.com/repos/mailersend/mailersend-laravel-driver/zipball/dd465077e89b903fe1dcc75c92203c7449ef57ee",
+                "reference": "dd465077e89b903fe1dcc75c92203c7449ef57ee",
                 "shasum": ""
             },
             "require": {
@@ -2144,9 +2144,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mailersend/mailersend-laravel-driver/issues",
-                "source": "https://github.com/mailersend/mailersend-laravel-driver/tree/v2.6.1"
+                "source": "https://github.com/mailersend/mailersend-laravel-driver/tree/v2.7.0"
             },
-            "time": "2024-06-10T10:22:43+00:00"
+            "time": "2024-08-28T08:14:54+00:00"
         },
         {
             "name": "mailersend/mailersend",

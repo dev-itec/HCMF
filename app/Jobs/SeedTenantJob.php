@@ -30,12 +30,19 @@ class SeedTenantJob implements ShouldQueue
     public function handle(): void
     {
         $this->tenant->run(function () {
+            // Verificar si el rol "admin" existe, si no, crearlo
+            if (!\Spatie\Permission\Models\Role::where('name', 'admin')->exists()) {
+                \Spatie\Permission\Models\Role::create(['name' => 'admin']);
+            }
+
+            // Crear el usuario
             $user = User::create([
                 'name'     => $this->tenant->name,
                 'email'    => $this->tenant->email,
                 'password' => $this->tenant->password,
             ]);
 
+            // Asignar el rol
             $user->assignRole('admin');
         });
     }

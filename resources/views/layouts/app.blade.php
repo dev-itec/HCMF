@@ -7,6 +7,8 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
+        <link rel="shortcut icon" href="https://home.hcmfront.com/hubfs/favicon@3x.png">
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;700&display=swap" rel="stylesheet">
@@ -47,7 +49,7 @@
 
                                 <x-slot name="content">
                                     <x-dropdown-link :href="route('profile.edit')">
-                                        {{ __('Profile') }}
+                                        {{ __('Perfil') }}
                                     </x-dropdown-link>
 
                                     <!-- Authentication -->
@@ -57,7 +59,7 @@
                                         <x-dropdown-link :href="route('logout')"
                                                          onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                            {{ __('Log Out') }}
+                                            {{ __('Salir') }}
                                         </x-dropdown-link>
                                     </form>
                                 </x-slot>
@@ -82,6 +84,18 @@
                         <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                             {{ __('Dashboard') }}
                         </x-responsive-nav-link>
+                        <nav class="flex-1 space-y-2">
+                            <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group
+                               {{ request()->routeIs('dashboard') ? 'bg-sky-500 text-white' : 'text-gray-900 hover:text-white hover:bg-sky-500' }}">
+                                <i class="fa-solid fa-display mr-3"></i> Panel
+                            </a>
+                        </nav>
+                        <nav class="flex-1 space-y-2">
+                            <a href="{{ route('tenants.index') }}" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group
+                           {{ request()->routeIs('tenants.index') ? 'bg-sky-500 text-white' : 'text-gray-900 hover:text-white hover:bg-sky-500' }}">
+                                <i class="fa-regular fa-chart-bar mr-3"></i> Usuarios
+                            </a>
+                        </nav>
                     </div>
 
                     <!-- Responsive Settings Options -->
