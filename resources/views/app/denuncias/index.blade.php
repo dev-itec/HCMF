@@ -86,17 +86,21 @@
     function openModal(denuncia) {
         let evidenciaContent = '';
 
-        // Verifica si hay archivos adjuntos
+        // Decodificar la evidencia si existe
         if (denuncia.evidencia && denuncia.evidencia.length > 0) {
-            // Convierte el string JSON a un array
-            let archivosAdjuntos = JSON.parse(denuncia.evidencia);
+            // Dado que en la BD está almacenado como un string JSON, necesitamos parsearlo
+            let archivosAdjuntos = JSON.parse(denuncia.evidencia); // Decodifica el array de evidencia
 
             evidenciaContent = '<h5 class="text-1xl font-semibold">Archivos Adjuntos:</h5><ul class="list-disc pl-5">';
             archivosAdjuntos.forEach((file, index) => {
+                // Generar la URL del archivo
+                const fileUrl = `/storage/${file.replace(/\\/g, '')}`; // Quitar barras invertidas y crear la URL
+
                 evidenciaContent += `
-            <li>
-                <a href="${file}" target="_blank" class="text-blue-500 underline">Archivo ${index + 1}</a>
-            </li>`;
+                <li>
+                    <a href="${fileUrl}" target="_blank" class="text-blue-500 underline">Archivo ${index + 1}</a>
+                    <button onclick="downloadFile('${fileUrl}')" class="bg-green-500 text-white px-2 py-1 rounded ml-4">Descargar</button>
+                </li>`;
             });
             evidenciaContent += '</ul>';
         } else {
@@ -104,33 +108,40 @@
         }
 
         const content = `
-    <h5 class="text-1xl font-semibold">Denunciante:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.nombre_completo}</span>
-    <h5 class="text-1xl font-semibold">Tipo de denuncia:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.tipo_denuncia.join(', ')}</span>
-    <h5 class="text-1xl font-semibold">Denunciado:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.personas_involucradas}</span>
-    <h5 class="text-1xl font-semibold">Fecha denuncia:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
-    ${evidenciaContent} <!-- Archivos adjuntos se muestran aquí -->
-    <h5 class="text-1xl font-semibold mt-3">Estado Actual:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.status}</span>
-    <h5 class="text-1xl font-semibold mt-3">Cambiar Estado:</h5>
-    <select id="denunciaStatus" data-denuncia-id="${denuncia.id}" class="w-full p-2 mt-2 border border-gray-300 rounded">
-        <option value="pendiente" ${denuncia.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
-        <option value="en proceso" ${denuncia.status === 'en proceso' ? 'selected' : ''}>En Proceso</option>
-        <option value="informacion solicitada" ${denuncia.status === 'informacion solicitada' ? 'selected' : ''}>Información Solicitada</option>
-        <option value="resuelta" ${denuncia.status === 'resuelta' ? 'selected' : ''}>Resuelta</option>
-    </select>
-    <h5 class="text-1xl font-semibold mt-3">Responsable:</h5>
-    <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.responsable || ''}</span>
+        <h5 class="text-1xl font-semibold">Denunciante:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.nombre_completo}</span>
+        <h5 class="text-1xl font-semibold">Tipo de denuncia:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.tipo_denuncia.join(', ')}</span>
+        <h5 class="text-1xl font-semibold">Denunciado:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.personas_involucradas}</span>
+        <h5 class="text-1xl font-semibold">Fecha denuncia:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
+        ${evidenciaContent}
+        <h5 class="text-1xl font-semibold mt-3">Estado Actual:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.status}</span>
+        <h5 class="text-1xl font-semibold mt-3">Cambiar Estado:</h5>
+        <select id="denunciaStatus" data-denuncia-id="${denuncia.id}" class="w-full p-2 mt-2 border border-gray-300 rounded">
+            <option value="pendiente" ${denuncia.status === 'pendiente' ? 'selected' : ''}>Pendiente</option>
+            <option value="en proceso" ${denuncia.status === 'en proceso' ? 'selected' : ''}>En Proceso</option>
+            <option value="informacion solicitada" ${denuncia.status === 'informacion solicitada' ? 'selected' : ''}>Información Solicitada</option>
+            <option value="resuelta" ${denuncia.status === 'resuelta' ? 'selected' : ''}>Resuelta</option>
+        </select>
+        <h5 class="text-1xl font-semibold mt-3">Responsable:</h5>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.responsable || ''}</span>
     `;
 
         document.getElementById('modalContent').innerHTML = content;
         document.getElementById('detailModal').classList.remove('hidden');
     }
 
-
+    function downloadFile(fileUrl) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+        link.setAttribute('download', ''); // Esto puede ser el nombre del archivo si deseas
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 
     function updateStatus() {
         const status = document.getElementById('denunciaStatus').value;

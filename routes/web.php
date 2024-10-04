@@ -19,14 +19,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-/*Route::get('/denuncia', function () {
-    return view('denuncia.create');
-})->name('denuncia');*/
-
-/*Route::get('/status', function () {
-    return view('status.index');
-})->name('status');*/
-
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -37,10 +29,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('tenants', TenantController::class);
-    /*Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports');
-    Route::get('/form', [FormController::class, 'index'])->name('form');
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');*/
 
 });
 

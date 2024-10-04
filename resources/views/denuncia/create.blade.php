@@ -131,15 +131,15 @@
             <label class="block text-gray-700 font-semibold">Tipo de Denuncia (Marque todas las que apliquen)</label>
             <div class="mt-2 space-y-2">
                 <label class="block">
-                    <input type="checkbox" name="tipo_denuncia[]" value="Tipo 1" class="form-checkbox">
+                    <input type="checkbox" name="tipo_denuncia[]" value="Acoso laboral" class="form-checkbox">
                     <span class="ml-2">Acoso laboral</span>
                 </label>
                 <label class="block">
-                    <input type="checkbox" name="tipo_denuncia[]" value="Tipo 1" class="form-checkbox">
+                    <input type="checkbox" name="tipo_denuncia[]" value="Acoso sexual" class="form-checkbox">
                     <span class="ml-2">Acoso sexual </span>
                 </label>
                 <label class="block">
-                    <input type="checkbox" name="tipo_denuncia[]" value="Tipo 2" class="form-checkbox">
+                    <input type="checkbox" name="tipo_denuncia[]" value="Violencia en el trabajo" class="form-checkbox">
                     <span class="ml-2">Violencia en el trabajo</span>
                 </label>
                 <!-- Agregar más opciones según sea necesario -->
