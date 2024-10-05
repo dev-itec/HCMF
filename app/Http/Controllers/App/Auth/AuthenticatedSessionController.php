@@ -4,10 +4,12 @@ namespace App\Http\Controllers\App\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Tenant;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -25,11 +27,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(RouteServiceProvider::HOME);
+        $tenant = Tenant::where('email', $request->email)->first();
+    
+        if ($tenant && Hash::check($request->password, $tenant->password)) {
+            Auth::guard('tenant')->login($tenant);
+            
+            $request->session()->regenerate();
+    
+            return redirect()->intended(RouteServiceProvider::HOME);
+        } else {
+            return back()->withErrors([
+                'email' => 'Las credenciales no coinciden con nuestros registros.',
+            ]);
+        }
     }
 
     /**
