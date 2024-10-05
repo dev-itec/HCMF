@@ -86,6 +86,7 @@ class MenuController extends Controller
     }
     public function cerrarCaso(Request $request, $id)
     {
+
         $validatedData = $request->validate([
             'texto_resolucion' => 'required|string',
             'pdf' => 'nullable|file|mimes:pdf|max:2048', // 2MB max para el PDF
@@ -97,9 +98,21 @@ class MenuController extends Controller
         // Manejar la subida del archivo PDF
         $rutaArchivo = null;
         if ($request->hasFile('pdf')) {
-            $archivo = $request->file('pdf');
-            $nombreArchivo = $denuncia->identificador . '.' . $archivo->getClientOriginalExtension();
-            $rutaArchivo = $archivo->storeAs("tenants/{$denuncia->tenant_id}/resoluciones", $nombreArchivo, 'public');
+            // Obtener el archivo del request
+            $file = $request->file('pdf');
+
+            $identificador = strtoupper(bin2hex(random_bytes(8))); // Genera un código hexadecimal de 12 dígitos
+            $timestamp = now()->format('His');
+            $filename = "{$identificador}_{$timestamp}." . $file->getClientOriginalExtension();
+            $tenantFolder = tenant()->id ?? 'default_tenant';
+            $destinationPath = base_path("tenants/{$tenantFolder}/evidencias");
+            $rutaArchivo = $destinationPath;
+
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $file->move($destinationPath, $filename);
         }
 
         // Guardar la resolución en la base de datos

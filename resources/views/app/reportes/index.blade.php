@@ -55,14 +55,20 @@
                                                 Ver Expediente
                                             </button>
                                         @else
-                                            <x-btn-link class="bg-sky-500" href="javascript:void(0);" onclick="openModal({
-                                            id: '{{ $denuncia->id }}',
-                                            nombre_completo: '{{ $denuncia->nombre_completo }}',
-                                            personas_involucradas: '{{ $denuncia->personas_involucradas }}',
-                                            created_at: '{{ $denuncia->created_at }}',
-                                            responsable: '{{ $denuncia->responsable }}',
-                                            status: '{{ $denuncia->status }}'
-                                        })">Cerrar Caso</x-btn-link>
+                                            <x-btn-link 
+                                                class="bg-sky-500" 
+                                                href="javascript:void(0);" 
+                                                onclick="openModal({
+                                                    id: '{{ $denuncia->id }}',
+                                                    nombre_completo: '{{ $denuncia->nombre_completo }}',
+                                                    personas_involucradas: '{{ $denuncia->personas_involucradas }}',
+                                                    created_at: '{{ $denuncia->created_at }}',
+                                                    responsable: '{{ $denuncia->responsable }}',
+                                                    status: '{{ $denuncia->status }}'
+                                                })"
+                                            >
+                                                Cerrar Caso
+                                            </x-btn-link>
                                         @endif
                                     </td>
 
@@ -76,8 +82,24 @@
         </div>
     </div>
 
+    
     <!-- Modal -->
-    {{-- <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
+    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
+        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
+            <!-- Botón de cierre "X" -->
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                &times; <!-- Símbolo de la X -->
+            </button>
+            <h3 class="text-xl font-semibold mb-4">Detalles de la Denuncia</h3>
+            <div id="modalContent" class="text-center sm:text-left mb-14">
+                <!-- Aquí se llenará la información -->
+            </div>
+            <button onclick="closeModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
+        </div>
+    </div>
+
+    {{-- <!-- Modal -->
+    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg relative">
             <!-- Botón de cierre "X" -->
             <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
@@ -98,9 +120,9 @@
                 <button onclick="confirmCloseCase('{{ $denuncia->id }}')" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Cerrar Caso</button>
             </form>
         </div>
-    </div>
+    </div> --}}
     <!-- Modal para ver el PDF -->
-    <div id="fileModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
+    {{-- <div id="fileModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
             <h3 class="text-xl font-semibold mb-4">Ver Expediente</h3>
             <iframe id="pdfViewer" src="" width="100%" height="500px"></iframe>
@@ -121,6 +143,15 @@
             <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.personas_involucradas}</span>
             <h5 class="text-1xl font-semibold">Fecha denuncia:</h5>
             <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
+            <form id="closeCaseForm" enctype="multipart/form-data">
+                <h5 class="text-1xl font-semibold">Texto de Resolución:</h5>
+                <textarea id="textoResolucion" class="w-full p-2 mt-2 border border-gray-300 rounded" rows="3" required></textarea>
+
+                <h5 class="text-1xl font-semibold mt-3">Adjuntar PDF:</h5>
+                <input type="file" id="archivoPdf" class="mt-2" accept="application/pdf">
+
+                <button onclick="confirmCloseCase('{{ $denuncia->id }}')" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Cerrar Caso</button>
+            </form>
             `;
             document.getElementById('modalContent').innerHTML = content;
             document.querySelector('#detailModal h3').textContent = `Cerrar Caso ${denuncia.id}`;
@@ -174,13 +205,17 @@
                     const textoResolucion = document.getElementById('textoResolucion').value;
                     const archivoPdf = document.getElementById('archivoPdf').files[0];
 
+                    console.log('Hola el resolucion pdf');
+
                     if (!textoResolucion) {
                         Swal.fire('Error!', 'Debe proporcionar un texto de resolución.', 'error');
                         return;
                     }
 
                     const formData = new FormData();
+
                     formData.append('texto_resolucion', textoResolucion);
+
                     if (archivoPdf) {
                         formData.append('pdf', archivoPdf);
                     }
@@ -191,11 +226,14 @@
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                Swal.fire('Cerrado!', 'El caso ha sido cerrado.', 'success');
+                    }).then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Cerrado!',
+                                text: 'El caso ha sido cerrado.',
+                                icon: 'success'
+                            }).then(() => {
                                 closeModal();
 
                                 // Cambiar el botón "Cerrar Caso" a "Ver Expediente"
@@ -207,14 +245,14 @@
                                 const statusBadge = document.getElementById(`status-badge-${denunciaId}`);
                                 statusBadge.textContent = 'Resuelta';
                                 statusBadge.className = 'px-2 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
-                            } else {
-                                Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
+                            });
+                        } else {
                             Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
-                        });
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
+                    });
                 }
             });
         }
