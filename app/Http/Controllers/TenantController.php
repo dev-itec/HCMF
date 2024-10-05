@@ -7,9 +7,7 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 
 class TenantController extends Controller
 {
@@ -48,14 +46,8 @@ class TenantController extends Controller
         // Cifrado de la contraseña
         $validatedData['password'] = Hash::make($validatedData['password']);
 
-        Log::info('password created:' . " " . $validatedData['password']);
-
         // Crear el tenant
         $tenant = Tenant::create($validatedData);
-
-        Log::info('Checking pass: ' . Hash::check($validatedData['password'], $tenant['password']));
-
-        Log::info('password created in tenant:' . " " . $tenant['password']);
 
         // Enviar el correo de bienvenida
         Mail::to($validatedData['email'])->send(new WelcomeTenantMail($tenant));
@@ -65,8 +57,7 @@ class TenantController extends Controller
         $tenant->domains()->create([
             'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
         ]);
-        
-        
+        //dd($validatedData);
         return redirect()->route('tenants.index');
     }
 
@@ -90,6 +81,9 @@ class TenantController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Tenant $tenant)
     {
         // Validación
@@ -110,7 +104,6 @@ class TenantController extends Controller
 
         // Actualizar el tenant
         $tenant->update($validatedData);
-        // dd($tenant);
 
         // Actualizar el dominio asociado
         if ($tenant->domains->isNotEmpty()) {

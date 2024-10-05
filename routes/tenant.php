@@ -55,16 +55,16 @@ Route::middleware([
 
     Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
 
-    Route::middleware(['auth:tenant'])->group(function () {
-        Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
-        Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
-        Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
-        //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
-        Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
-        Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
-        Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
-        Route::get('/formulario', [MenuController::class, 'formulario'])->name('formulario.index');
-        Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
+    Route::middleware('auth')->group(function () {
+    Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
+    Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
+    Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
+    //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
+    Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
+    Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
+    Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
+    Route::get('/formulario', [MenuController::class, 'formulario'])->name('formulario.index');
+    Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
     });
 
 
@@ -72,10 +72,10 @@ Route::middleware([
         return view('app.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');*/
     Route::get('/dashboard', [MenuController::class, 'index'])
-        ->middleware(['auth:tenant', 'verified'])
+        ->middleware(['auth', 'verified'])
         ->name('dashboard');
 
-    Route::middleware(['auth:tenant'])->group(function () {
+    Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
