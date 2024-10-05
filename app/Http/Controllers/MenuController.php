@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Answer;
 use App\Models\Resolucion;
+use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class MenuController extends Controller

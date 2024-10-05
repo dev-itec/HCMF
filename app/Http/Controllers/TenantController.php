@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Mail\WelcomeTenantMail;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Stancl\Tenancy\Tenant as TenacyTenant;
 
 class TenantController extends Controller
 {
@@ -81,9 +83,6 @@ class TenantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Tenant $tenant)
     {
         // Validación
@@ -94,24 +93,31 @@ class TenantController extends Controller
             'password'    => ['nullable', 'confirmed', Rules\Password::defaults()],
             'api_key'     => 'nullable|string|max:255',
         ]);
-
-        // Si se proporcionó una nueva contraseña, se cifra
+    
         if (!empty($validatedData['password'])) {
             $validatedData['password'] = Hash::make($validatedData['password']);
+    
+            // Inicializa conexión con la otra base de datos
+            tenancy()->initialize($tenant);
+    
+            $user = User::where('email', $request->email)->first();    
+            if ($user) {
+                $user->update(['password' => $validatedData['password']]);
+            }
         } else {
             unset($validatedData['password']); // No cambiar la contraseña si no se proporcionó
         }
-
-        // Actualizar el tenant
+    
+        // Actualizar el tenant en la base de datos central
         $tenant->update($validatedData);
-
-        // Actualizar el dominio asociado
+    
+        // Actualizar el dominio asociado en la base de datos central
         if ($tenant->domains->isNotEmpty()) {
             $tenant->domains()->update([
                 'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
             ]);
         }
-
+    
         return redirect()->route('tenants.index')->with('success', 'Cliente actualizado con éxito.');
     }
 

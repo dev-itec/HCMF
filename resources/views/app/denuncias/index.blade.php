@@ -48,16 +48,22 @@
                                     </td>
 
                                     <td class="px-6 py-4">
-                                        <x-btn-link class="bg-sky-500" href="javascript:void(0);" onclick="openModal({
-                                            id: '{{ $denuncia->id }}',
-                                            nombre_completo: '{{ $denuncia->nombre_completo }}',
-                                            tipo_denuncia: {{ json_encode($denuncia->tipo_denuncia) }},
-                                            personas_involucradas: '{{ $denuncia->personas_involucradas }}',
-                                            created_at: '{{ $denuncia->created_at }}',
-                                            responsable: '{{ Auth::user()->email }}',
-                                            status: '{{ $denuncia->status }}'
-                                        })"
-                                        >Detalle</x-btn-link>
+                                        <x-btn-link 
+                                            class="bg-sky-500" 
+                                            href="javascript:void(0);" 
+                                            onclick="openModal({
+                                                id: '{{ $denuncia->id }}',
+                                                nombre_completo: '{{ $denuncia->nombre_completo }}',
+                                                tipo_denuncia: {{ json_encode($denuncia->tipo_denuncia) }},
+                                                personas_involucradas: '{{ $denuncia->personas_involucradas }}',
+                                                created_at: '{{ $denuncia->created_at }}',
+                                                responsable: '{{ Auth::user()->email }}',
+                                                status: '{{ $denuncia->status }}',
+                                                evidencia: '{{ $denuncia->evidencia }}'
+                                            })"
+                                        >
+                                            Detalle
+                                        </x-btn-link>
                                     </td>
                                 </tr>
                             @endforeach
@@ -93,13 +99,16 @@
 
             evidenciaContent = '<h5 class="text-1xl font-semibold">Archivos Adjuntos:</h5><ul class="list-disc pl-5">';
             archivosAdjuntos.forEach((file, index) => {
+
                 // Generar la URL del archivo
-                const fileUrl = `/storage/${file.replace(/\\/g, '')}`; // Quitar barras invertidas y crear la URL
+                const fileUrl = `${file.replace(/\\/g, '')}`; // Quitar barras invertidas y crear la URL
+                const routeUrl = `{{ route('pdf.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
+                const routeDownloadPdf =  `{{ route('pdf.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
 
                 evidenciaContent += `
                 <li>
-                    <a href="${fileUrl}" target="_blank" class="text-blue-500 underline">Archivo ${index + 1}</a>
-                    <button onclick="downloadFile('${fileUrl}')" class="bg-green-500 text-white px-2 py-1 rounded ml-4">Descargar</button>
+                    <a href="${routeUrl}" target="_blank" class="text-blue-500 underline font-bold no-underline">Archivo ${index + 1}</a>
+                    <button onclick="window.location.href='${routeDownloadPdf}'" class="bg-green-500 text-white px-2 py-1 rounded ml-4">Descargar</button>
                 </li>`;
             });
             evidenciaContent += '</ul>';
@@ -160,35 +169,29 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({ status })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Actualizar el texto del badge
-                    const statusBadge = document.getElementById(`status-badge-${denunciaId}`);
-                    statusBadge.innerText = status.charAt(0).toUpperCase() + status.slice(1);
+        }).then(response => {
+            return response.json();
+        }).then(data => {
+            if (data.success) {
+                // Actualizar el texto del badge
+                const statusBadge = document.getElementById(`status-badge-${denunciaId}`);
+                statusBadge.innerText = status.charAt(0).toUpperCase() + status.slice(1);
 
-                    // Eliminar las clases de color existentes
-                    statusBadge.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-orange-500', 'bg-green-500', 'bg-gray-500', 'text-white', 'text-black');
+                // Eliminar las clases de color existentes
+                statusBadge.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-orange-500', 'bg-green-500', 'bg-gray-500', 'text-white', 'text-black');
 
-                    // Asignar las nuevas clases de color
-                    const newClasses = getStatusClasses(status);
-                    statusBadge.classList.add(...newClasses); // Agregar las nuevas clases
+                // Asignar las nuevas clases de color
+                const newClasses = getStatusClasses(status);
+                statusBadge.classList.add(...newClasses); // Agregar las nuevas clases
 
-                    closeModal(); // Cerrar el modal si se desea
-                } else {
-                    alert('Hubo un error al actualizar el estado');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                closeModal(); // Cerrar el modal si se desea
+            } else {
                 alert('Hubo un error al actualizar el estado');
-            });
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('Hubo un error al actualizar el estado');
+        });
     }
 
     // Función para obtener las clases de estado (colores)

@@ -13,6 +13,7 @@ use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\LaravelDriver\MailerSendTrait;
 use App\Mail\DenunciaRecibida;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class DenunciaController extends Controller
 {
@@ -63,15 +64,18 @@ class DenunciaController extends Controller
                 // Generar el nombre del archivo con formato identificador_hhmmss
                 $timestamp = now()->format('His');
                 $filename = "{$identificador}_{$timestamp}." . $file->getClientOriginalExtension();
-
-                // Obtener la carpeta del tenant actual (reemplaza 'tenant_folder' con tu lógica para obtener el tenant actual)
+    
                 $tenantFolder = tenant()->id ?? 'default_tenant';
 
-                // Guardar el archivo en storage/app/tenants/{tenant}/evidencias
-                $path = $file->storeAs("tenants/{$tenantFolder}/evidencias", $filename, 'public');
+                $destinationPath = base_path("tenants/{$tenantFolder}/evidencias");
 
-                // Agregar la ruta al array
-                $evidenciaPaths[] = $path;
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+    
+                $file->move($destinationPath, $filename);
+    
+                $evidenciaPaths[] = "{$filename}";
             }
         }
 
@@ -154,6 +158,9 @@ class DenunciaController extends Controller
         return view('status.index', compact('denuncia'));
     }
 
+    /**
+     * Actualiza el estado de las denuncias de algún tenant
+     */
     public function updateStatus(Request $request, $id)
     {
         // Validar el nuevo estado
@@ -165,7 +172,7 @@ class DenunciaController extends Controller
         $denuncia = Answer::findOrFail($id);
 
         // Registrar el cambio de estado
-        AnswerStatusHistory::create([
+        $answerStatusHistory = AnswerStatusHistory::create([
             'answer_id' => $denuncia->id,
             'old_status' => $denuncia->status, // Estado actual antes del cambio
             'new_status' => $request->status,  // El nuevo estado

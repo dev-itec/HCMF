@@ -8,6 +8,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\DenunciaController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\UserController;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -31,10 +32,10 @@ Route::middleware([
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
     /*
-    Route::get('/', function () {
-        dd(tenant()->toArray());
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+        Route::get('/', function () {
+            dd(tenant()->toArray());
+            return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
+        });
     */
 
     Route::get('/', function () {
@@ -49,36 +50,85 @@ Route::middleware([
         return $response->json();
     });
 
-    Route::get('/denuncia/{tenant_id}/create', [DenunciaController::class, 'create'])->name('denuncia.create');
-    Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
-    Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
-
-    Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
-
-    Route::middleware('auth')->group(function () {
-    Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
-    Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
-    Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
-    //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
-    Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
-    Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
-    Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
-    Route::get('/formulario', [MenuController::class, 'formulario'])->name('formulario.index');
-    Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
-    });
-
-
-    /*Route::get('/dashboard', function () {
+    /*
+        Route::get('/dashboard', function () {
         return view('app.dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');*/
-    Route::get('/dashboard', [MenuController::class, 'index'])
-        ->middleware(['auth', 'verified'])
-        ->name('dashboard');
-
+        })->middleware(['auth', 'verified'])->name('dashboard');
+    */
+      
     Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [MenuController::class, 'index'])->name('dashboard');
+
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+        Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
+        Route::get('/denuncia/{tenant_id}/create', [DenunciaController::class, 'create'])->name('denuncia.create');
+        Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
+        Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
+
+        Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
+        Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
+        Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
+        //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
+        Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
+        Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
+
+        Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
+
+        Route::get('/formulario', [MenuController::class, 'formulario'])->name('formulario.index');
+
+        Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
+
+        // Ruta pública para los pdf
+        Route::get('/pdf/{filename}', function ($filename) {
+            // Cierra conexion con esta base de datos
+            $emailFromAuth = auth()->user()->email;
+            tenancy()->end();
+            $tenant = Tenant::where('email', $emailFromAuth)->first();
+            tenancy()->initialize($tenant);
+
+            $path = base_path('tenants\\' . $tenant->id . '\\evidencias\\' . $filename);
+
+            if (!File::exists($path)) {
+                dd($path);
+                abort(404);
+            }
+
+            $file = File::get($path);
+            $type = File::mimeType($path);
+
+            $response = Response::make($file, 200);
+            $response->header("Content-Type", $type);
+
+            return $response;
+        })->name('pdf.view');
+
+
+        Route::get('/pdf/download/{filename}', function ($filename) {
+            // Cierra conexion con esta base de datos
+            $emailFromAuth = auth()->user()->email;
+            tenancy()->end();
+            $tenant = Tenant::where('email', $emailFromAuth)->first();
+            tenancy()->initialize($tenant);
+        
+            $path = base_path('tenants/' . $tenant->id . '/evidencias/' . $filename);
+        
+            if (!File::exists($path)) {
+                abort(404);
+            }
+        
+            $file = File::get($path);
+            $type = File::mimeType($path);
+        
+            // Crear la respuesta con encabezado para forzar la descarga
+            $response = Response::make($file, 200);
+            $response->header('Content-Type', $type);
+            $response->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        
+            return $response;
+        })->name('pdf.download');
 
         Route::group(['middleware' => ['role:admin']], function () {
             Route::resource('users', UserController::class);

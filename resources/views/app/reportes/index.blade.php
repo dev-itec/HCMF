@@ -77,7 +77,7 @@
     </div>
 
     <!-- Modal -->
-    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
+    {{-- <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg relative">
             <!-- Botón de cierre "X" -->
             <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
@@ -106,7 +106,7 @@
             <iframe id="pdfViewer" src="" width="100%" height="500px"></iframe>
             <button onclick="closeFileModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
         </div>
-    </div>
+    </div> --}}
 
 
     <!-- Incluir SweetAlert2 desde CDN -->
