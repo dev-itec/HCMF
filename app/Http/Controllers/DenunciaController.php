@@ -68,6 +68,14 @@ class DenunciaController extends Controller
                 $destinationPath = storage_path("/evidencias");
         
                 if (!File::exists($destinationPath)) {
+                    /*
+                        Detalles sobre el permiso 0755
+                            - Propietario (User): Tiene permisos de lectura, escritura y ejecución (7 - rwx).
+                            - Grupo (Group): Tiene permisos de lectura y ejecución (5 - r-x).
+                            - Otros (Others): Tiene permisos de lectura y ejecución (5 - r-x).
+                            - Propietario: Puede hacer todo con el directorio (leer, escribir, ejecutar).
+                            - Grupo y Otros: Pueden leer y ejecutar, pero no pueden modificar (no hay permisos de escritura).
+                    */
                     File::makeDirectory($destinationPath, 0755, true);
                 }
         
@@ -218,11 +226,53 @@ class DenunciaController extends Controller
     }
 
     /**
+     * Para ver el pdf del reporte del denunciante
+     * @param string $filename nombre del archivo
+     */
+    public function viewFileReportes ($filename) {
+        $path = storage_path('\\reportes\\' . $filename);
+
+        if (!File::exists($path)) {
+            abort(404);
+        }
+
+        $file = File::get($path);
+        $type = File::mimeType($path);
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", $type);
+
+        return $response;
+    }
+
+    /**
      * Para descargar el archico que el denunciante subió
      * @param $filename nombre del archivo
      */
     public function downloadFile ($filename) {    
         $path = storage_path('\\evidencias\\' . $filename);
+    
+        if (!File::exists($path)) {
+            abort(404);
+        }
+    
+        $file = File::get($path);
+        $type = File::mimeType($path);
+    
+        // Crear la respuesta con encabezado para forzar la descarga
+        $response = Response::make($file, 200);
+        $response->header('Content-Type', $type);
+        $response->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    
+        return $response;
+    }
+
+    /**
+     * Para descargar el pdf del reporte del denunciante
+     * @param $filename nombre del archivo
+     */
+    public function downloadFileReportes ($filename) {    
+        $path = storage_path('\\reportes\\' . $filename);
     
         if (!File::exists($path)) {
             abort(404);

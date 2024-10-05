@@ -70,8 +70,7 @@ Route::middleware([
         Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
         Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
         Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
-        //Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
-        Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso']);
+        Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
         Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
 
         Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
@@ -82,6 +81,9 @@ Route::middleware([
 
         Route::get('/file/{filename}', [DenunciaController::class, 'viewFile'])->name('file.view');
         Route::get('/file/download/{filename}', [DenunciaController::class, 'downloadFile'])->name('file.download');
+
+        Route::get('/file/{filename}/reportes', [DenunciaController::class, 'viewFileReportes'])->name('file.reportes.view');
+        Route::get('/file/download/{filename}/reportes', [DenunciaController::class, 'downloadFileReportes'])->name('file.reportes.download');
 
         Route::group(['middleware' => ['role:admin']], function () {
             Route::resource('users', UserController::class);

@@ -86,15 +86,10 @@
     <!-- Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
-            <!-- Botón de cierre "X" -->
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                &times; <!-- Símbolo de la X -->
-            </button>
             <h3 class="text-xl font-semibold mb-4">Detalles de la Denuncia</h3>
             <div id="modalContent" class="text-center sm:text-left mb-14">
                 <!-- Aquí se llenará la información -->
             </div>
-            <button onclick="closeModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
         </div>
     </div>
 
@@ -126,7 +121,6 @@
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
             <h3 class="text-xl font-semibold mb-4">Ver Expediente</h3>
             <iframe id="pdfViewer" src="" width="100%" height="500px"></iframe>
-            <button onclick="closeFileModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
         </div>
     </div> --}}
 
@@ -134,7 +128,7 @@
     <!-- Incluir SweetAlert2 desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
+    <script>        
         function openModal(denuncia) {
             const content = `
             <h5 class="text-1xl font-semibold">Denunciante:</h5>
@@ -150,34 +144,64 @@
                 <h5 class="text-1xl font-semibold mt-3">Adjuntar PDF:</h5>
                 <input type="file" id="archivoPdf" class="mt-2" accept="application/pdf">
 
-                <button onclick="confirmCloseCase('{{ $denuncia->id }}')" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Cerrar Caso</button>
+                <div class="flex items-center justify-items-left">
+                    <button id="closeCaseButton" class="mt-4 bg-green-500 text-white px-4 py-2 rounded mr-2">Cerrar Caso</button>
+                    <button onclick="closeFileModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
+                </div>
             </form>
             `;
             document.getElementById('modalContent').innerHTML = content;
             document.querySelector('#detailModal h3').textContent = `Cerrar Caso ${denuncia.id}`;
             document.getElementById('detailModal').classList.remove('hidden');
+
+            document.getElementById('closeCaseButton').addEventListener('click', async (event) => {
+                event.preventDefault();
+                await handleCaseClosure(denuncia.id);
+            });
+
+            async function handleCaseClosure(denunciaId) {
+                await confirmCloseCase(denunciaId);
+            }
         }
 
+        // Función para ver el expediente
         function openFileModal(pdfPath) {
-            const pdfViewer = document.getElementById('pdfViewer');
-            pdfViewer.src = `/storage/${pdfPath}`; // Asegúrate de que el archivo PDF esté accesible desde la carpeta 'public/storage'
-            document.getElementById('fileModal').classList.remove('hidden');
+            // const pdfViewer = document.getElementById('pdfViewer');
+            // pdfViewer.src = `/storage/${pdfPath}`; // Asegúrate de que el archivo PDF esté accesible desde la carpeta 'public/storage'
+            // document.getElementById('fileModal').classList.remove('hidden');
+
+            // console.log('Ese es el nombre del archivo'  + pdfPath);
+            if(pdfPath){
+                const url = `{{ route('file.reportes.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
+                window.location.href = url;
+            } else {
+                console.error('Problemas con el archivo adjunto')
+            }
         }
 
         function closeModal() {
             document.getElementById('detailModal').classList.add('hidden');
         }
+
         // Función para descargar el expediente
         function downloadExpediente(pdfPath) {
-            const link = document.createElement('a');
+            console.log('PdfPath: ' + pdfPath);
+            // const link = document.createElement('a');
 
-            // Ajustar la ruta para que apunte a 'public/storage/resoluciones'
-            const publicPath = pdfPath.replace('storage/', 'storage/'); // Ajusta según el almacenamiento en Laravel
-            link.href = `/storage/${publicPath}`;  // Asegurarse que la ruta es accesible públicamente
-            link.download = publicPath.split('/').pop(); // Nombre del archivo
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // // Ajustar la ruta para que apunte a 'public/storage/resoluciones'
+            // // const publicPath = pdfPath.replace('storage/', 'storage/'); // Ajusta según el almacenamiento en Laravel
+            // link.href = `/storage/${publicPath}`;  // Asegurarse que la ruta es accesible públicamente
+            // link.download = publicPath.split('/').pop(); // Nombre del archivo
+            // document.body.appendChild(link);
+            // link.click();
+            // document.body.removeChild(link);
+
+            if(pdfPath){
+                const url = `{{ route('file.reportes.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
+                window.location.href = url;
+            } else {
+                console.error('Problemas con el archivo adjunto')
+            }
         }
 
         // Cerrar el modal con la tecla "Esc"
@@ -188,11 +212,12 @@
         });
 
         function closeFileModal() {
-            document.getElementById('fileModal').classList.add('hidden');
+            document.getElementById('detailModal').classList.add('hidden');
         }
 
-        function confirmCloseCase(denunciaId) {
-            Swal.fire({
+        // Envia info del caso al server
+        async function confirmCloseCase(denunciaId) {
+            const result = await Swal.fire({
                 title: '¿Estás seguro?',
                 text: "Esta acción cerrará el caso.",
                 icon: 'warning',
@@ -200,62 +225,85 @@
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Sí, cerrar caso!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const textoResolucion = document.getElementById('textoResolucion').value;
-                    const archivoPdf = document.getElementById('archivoPdf').files[0];
-
-                    console.log('Hola el resolucion pdf');
-
-                    if (!textoResolucion) {
-                        Swal.fire('Error!', 'Debe proporcionar un texto de resolución.', 'error');
-                        return;
-                    }
-
-                    const formData = new FormData();
-
-                    formData.append('texto_resolucion', textoResolucion);
-
-                    if (archivoPdf) {
-                        formData.append('pdf', archivoPdf);
-                    }
-
-                    fetch(`/denuncias/${denunciaId}/cerrar`, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    }).then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: 'Cerrado!',
-                                text: 'El caso ha sido cerrado.',
-                                icon: 'success'
-                            }).then(() => {
-                                closeModal();
-
-                                // Cambiar el botón "Cerrar Caso" a "Ver Expediente"
-                                const closeButton = document.querySelector(`#denuncia-${denunciaId} td:last-child button`);
-                                closeButton.textContent = 'Ver Expediente';
-                                closeButton.onclick = () => openFileModal(data.pdfPath);
-
-                                // Actualizar el badge del estado
-                                const statusBadge = document.getElementById(`status-badge-${denunciaId}`);
-                                statusBadge.textContent = 'Resuelta';
-                                statusBadge.className = 'px-2 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
-                            });
-                        } else {
-                            Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
-                        }
-                    }).catch(error => {
-                        console.error('Error:', error);
-                        Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
-                    });
-                }
             });
+
+            if (result.isConfirmed) {
+                const textoResolucion = document.getElementById('textoResolucion').value;
+                const archivoPdf = document.getElementById('archivoPdf').files[0];
+
+                if (!textoResolucion) {
+                    Swal.fire('Error!', 'Debe proporcionar un texto de resolución.', 'error');
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('texto_resolucion', textoResolucion);
+                if (archivoPdf) {
+                    formData.append('pdf', archivoPdf);
+                }
+
+                const data = await sendCaseToServer(denunciaId, formData);
+
+                if (data) {
+                    Swal.fire({
+                        title: 'Cerrado!',
+                        text: 'El caso ha sido cerrado.',
+                        icon: 'success'
+                    }).then(() => {
+                        closeModal();
+                        console.log('this is the data: ' + JSON.stringify(data));
+
+                        // Cambiar el botón "Cerrar Caso" a "Ver Expediente"
+                        let rowElement = document.getElementById(`denuncia-${denunciaId}`);
+                        let closeButton = rowElement.querySelector('td:last-child a');
+
+                        if (closeButton) {
+                            closeButton.textContent = 'Ver Expediente';
+                            closeButton.onclick = () => openFileModal(data.pdfPath);
+                            closeButton.onclick = () => openFileModal(data.pdfPath);
+                        } else {
+                            console.error('Botón no encontrado');
+                        }
+
+                        // Actualizar el badge del estado
+                        const statusBadge = rowElement.querySelector(`#status-badge-${denunciaId}`);
+                        if (statusBadge) {
+                            statusBadge.textContent = 'Resuelta';
+                            statusBadge.className = 'px-2 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
+                        } else {
+                            console.error('Badge no encontrado');
+                        }
+                    });
+                } else {
+                    Swal.fire('Error!', 'Hubo un problema al cerrar el caso.', 'error');
+                }
+            }
         }
+    
+        // Envia data a servidor
+        async function sendCaseToServer(denunciaId, formData) {
+            try {
+                const response = await fetch(`/denuncias/${denunciaId}/cerrar`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    return data;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                return false;
+            }
+        }
+    
 
         function closeCase() {
             const resolutionText = document.getElementById('resolutionText').value;
