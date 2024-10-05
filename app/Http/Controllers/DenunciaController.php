@@ -12,8 +12,13 @@ use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\LaravelDriver\MailerSendTrait;
 use App\Mail\DenunciaRecibida;
+use App\Models\Tenant;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
+
 
 class DenunciaController extends Controller
 {
@@ -55,26 +60,19 @@ class DenunciaController extends Controller
         $identificador = strtoupper(bin2hex(random_bytes(8))); // Genera un código hexadecimal de 12 dígitos
         $clave = bin2hex(random_bytes(3)); // Genera un código hexadecimal de 6 dígitos
 
-        // Variable para almacenar las rutas de evidencia
         $evidenciaPaths = [];
-
-        // Verificar si hay archivos subidos
         if ($request->hasFile('evidencia')) {
             foreach ($request->file('evidencia') as $file) {
-                // Generar el nombre del archivo con formato identificador_hhmmss
                 $timestamp = now()->format('His');
                 $filename = "{$identificador}_{$timestamp}." . $file->getClientOriginalExtension();
-    
-                $tenantFolder = tenant()->id ?? 'default_tenant';
-
-                $destinationPath = base_path("tenants/{$tenantFolder}/evidencias");
-
-                if (!file_exists($destinationPath)) {
-                    mkdir($destinationPath, 0777, true);
+                $destinationPath = storage_path("/evidencias");
+        
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
                 }
-    
+        
                 $file->move($destinationPath, $filename);
-    
+        
                 $evidenciaPaths[] = "{$filename}";
             }
         }
@@ -199,5 +197,45 @@ class DenunciaController extends Controller
         return view('answers.show', compact('denuncia', 'historial'));
     }
 
+    /**
+     * Para ver el pdf que el denunciante subió
+     * @param string $filename nombre del archivo
+     */
+    public function viewFile ($filename) {
+        $path = storage_path('\\evidencias\\' . $filename);
 
+        if (!File::exists($path)) {
+            abort(404);
+        }
+
+        $file = File::get($path);
+        $type = File::mimeType($path);
+
+        $response = Response::make($file, 200);
+        $response->header("Content-Type", $type);
+
+        return $response;
+    }
+
+    /**
+     * Para descargar el archico que el denunciante subió
+     * @param $filename nombre del archivo
+     */
+    public function downloadFile ($filename) {    
+        $path = storage_path('\\evidencias\\' . $filename);
+    
+        if (!File::exists($path)) {
+            abort(404);
+        }
+    
+        $file = File::get($path);
+        $type = File::mimeType($path);
+    
+        // Crear la respuesta con encabezado para forzar la descarga
+        $response = Response::make($file, 200);
+        $response->header('Content-Type', $type);
+        $response->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+    
+        return $response;
+    }
 }

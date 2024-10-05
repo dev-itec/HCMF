@@ -102,8 +102,8 @@
 
                 // Generar la URL del archivo
                 const fileUrl = `${file.replace(/\\/g, '')}`; // Quitar barras invertidas y crear la URL
-                const routeUrl = `{{ route('pdf.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
-                const routeDownloadPdf =  `{{ route('pdf.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
+                const routeUrl = `{{ route('file.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
+                const routeDownloadPdf =  `{{ route('file.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', fileUrl);
 
                 evidenciaContent += `
                 <li>

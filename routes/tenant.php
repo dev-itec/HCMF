@@ -8,7 +8,6 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\DenunciaController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\UserController;
-use App\Models\Tenant;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -81,54 +80,8 @@ Route::middleware([
 
         Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
 
-        // Ruta pública para los pdf
-        Route::get('/pdf/{filename}', function ($filename) {
-            // Cierra conexion con esta base de datos
-            $emailFromAuth = auth()->user()->email;
-            tenancy()->end();
-            $tenant = Tenant::where('email', $emailFromAuth)->first();
-            tenancy()->initialize($tenant);
-
-            $path = base_path('tenants\\' . $tenant->id . '\\evidencias\\' . $filename);
-
-            if (!File::exists($path)) {
-                dd($path);
-                abort(404);
-            }
-
-            $file = File::get($path);
-            $type = File::mimeType($path);
-
-            $response = Response::make($file, 200);
-            $response->header("Content-Type", $type);
-
-            return $response;
-        })->name('pdf.view');
-
-
-        Route::get('/pdf/download/{filename}', function ($filename) {
-            // Cierra conexion con esta base de datos
-            $emailFromAuth = auth()->user()->email;
-            tenancy()->end();
-            $tenant = Tenant::where('email', $emailFromAuth)->first();
-            tenancy()->initialize($tenant);
-        
-            $path = base_path('tenants/' . $tenant->id . '/evidencias/' . $filename);
-        
-            if (!File::exists($path)) {
-                abort(404);
-            }
-        
-            $file = File::get($path);
-            $type = File::mimeType($path);
-        
-            // Crear la respuesta con encabezado para forzar la descarga
-            $response = Response::make($file, 200);
-            $response->header('Content-Type', $type);
-            $response->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
-        
-            return $response;
-        })->name('pdf.download');
+        Route::get('/file/{filename}', [DenunciaController::class, 'viewFile'])->name('file.view');
+        Route::get('/file/download/{filename}', [DenunciaController::class, 'downloadFile'])->name('file.download');
 
         Route::group(['middleware' => ['role:admin']], function () {
             Route::resource('users', UserController::class);
