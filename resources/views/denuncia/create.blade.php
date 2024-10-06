@@ -311,33 +311,37 @@
             @endforeach
         @endif--}}
 
-        {{--<!-- Aquí colocas las preguntas dinámicas -->
-        @if($questions->isNotEmpty())
-            @foreach($questions as $question)
-                <div>
-                    <label class="block text-gray-700 font-semibold">{{ $question->label }}</label>
+        <!-- Preguntas dinámicas -->
+        @if($opcion_custom_form)
+            @if($questions->isNotEmpty())
+                @foreach($questions as $question)
+                    <div>
+                        <label class="block text-gray-700 font-semibold">{{ ucfirst($question->label) }}</label>
 
-                    @if($question->type == 'texto')
-                        <input type="text" name="respuestas[{{ $question->id }}]" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    @elseif($question->type == 'fecha')
-                        <input type="date" name="respuestas[{{ $question->id }}]" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                    @elseif($question->type == 'seleccionar')
-                        <select name="respuestas[{{ $question->id }}]" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                            @foreach($question->options as $option)
-                                <option value="{{ $option }}">{{ $option }}</option>
-                            @endforeach
-                        </select>
-                    @elseif($question->type == 'checkbox')
-                        @foreach($question->options as $option)
-                            <label>
-                                <input type="checkbox" name="respuestas[{{ $question->id }}][]" value="{{ $option }}">
-                                {{ $option }}
-                            </label>
-                        @endforeach
-                    @endif
-                </div>
-            @endforeach
-        @endif--}}
+                        @if($question->type == 'text')
+                            <input type="text" name="respuestas[{{ $question->id }}]" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        @elseif($question->type == 'date')
+                            <input type="date" name="respuestas[{{ $question->id }}]" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                        @elseif($question->type == 'select')
+                            <select name="respuestas[{{ $question->id }}]" class="mt-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                                @foreach($question->options as $option)
+                                    <option value="{{ $option }}">{{ $option }}</option>
+                                @endforeach
+                            </select>
+                        @elseif($question->type == 'checkbox')
+                            <div class="mt-2">
+                                @foreach($question->options as $option)
+                                    <label class="mr-2">
+                                        <input type="checkbox" name="respuestas[{{ $question->id }}][]" value="{{ $option }}">
+                                        {{ $option }}
+                                    </label>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            @endif
+        @endif
 
         <!-- Botón de envío -->
         <div class="text-center">
