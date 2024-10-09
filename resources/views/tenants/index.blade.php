@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            <i class="fa-solid fa-users-between-lines"></i>{{ __('Clientes') }}
-            <x-btn-link class="ml-4 float-right" href="{{ route('tenants.create') }}">Añadir</x-btn-link>
+            <i class="fa-solid fa-users-between-lines"></i>{{ __('Usuarios') }}
+            <x-btn-link class="ml-4 float-right bg-sky-500 hover:bg-sky-900" href="{{ route('tenants.create') }}">Añadir</x-btn-link>
         </h2>
     </x-slot>
 

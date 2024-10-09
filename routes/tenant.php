@@ -54,7 +54,16 @@ Route::middleware([
         return view('app.dashboard');
         })->middleware(['auth', 'verified'])->name('dashboard');
     */
-      
+    Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
+    Route::post('/denuncia/{id}/evidencia', [DenunciaController::class, 'evidencia'])->name('denuncia.evidencia');
+    Route::get('/denuncia/{tenant_id}/create', [DenunciaController::class, 'create'])->name('denuncia.create');
+    Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
+    Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
+
+    Route::post('/upload-evidencia', [DenunciaController::class, 'uploadEvidencia'])->name('upload.evidencia');
+    Route::delete('/delete-evidencia', [DenunciaController::class, 'deleteEvidencia'])->name('delete.evidencia');
+
+
     Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [MenuController::class, 'index'])->name('dashboard');
 
@@ -62,10 +71,7 @@ Route::middleware([
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-        Route::get('/denuncia/status', [DenunciaController::class, 'checkStatus'])->name('denuncia.status');
-        Route::get('/denuncia/{tenant_id}/create', [DenunciaController::class, 'create'])->name('denuncia.create');
-        Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
-        Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
+
 
         Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
         Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
@@ -79,8 +85,9 @@ Route::middleware([
 
         Route::get('/opciones', [MenuController::class, 'opciones'])->name('opciones.index');
 
-        Route::get('/file/{filename}', [DenunciaController::class, 'viewFile'])->name('file.view');
+        Route::get('/file/view/{filename}', [DenunciaController::class, 'viewFile'])->name('file.view');
         Route::get('/file/download/{filename}', [DenunciaController::class, 'downloadFile'])->name('file.download');
+
 
         Route::get('/file/{filename}/reportes', [DenunciaController::class, 'viewFileReportes'])->name('file.reportes.view');
         Route::get('/file/download/{filename}/reportes', [DenunciaController::class, 'downloadFileReportes'])->name('file.reportes.download');

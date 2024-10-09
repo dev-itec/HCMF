@@ -1,7 +1,7 @@
 <x-tenant-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit User') }}
+            {{ __('Editar Usuario') }}
         </h2>
     </x-slot>
 
@@ -15,7 +15,7 @@
 
                         <!-- Name -->
                         <div>
-                            <x-input-label for="name" :value="__('Name')" />
+                            <x-input-label for="name" :value="__('Nombre')" />
                             <x-text-input id="name" class="block mt-1 w-full" type="text" name="name"
                                 :value="old('name', $user->name)" required autofocus autocomplete="name" />
                             <x-input-error :messages="$errors->get('name')" class="mt-2" />
@@ -23,7 +23,7 @@
 
                         <!-- Email Address -->
                         <div class="mt-4">
-                            <x-input-label for="email" :value="__('Email')" />
+                            <x-input-label for="email" :value="__('Correo Electrónico')" />
                             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email"
                                 :value="old('email', $user->email)" required autocomplete="username" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
@@ -31,8 +31,8 @@
 
                         <!-- Roles -->
                         <div class="mt-4">
-                            <x-input-label for="roles" :value="__('Roles')" />
-                            <select multiple class="" name="roles[]">
+                            <x-input-label for="roles" :value="__('Rol')" />
+                            <select class="" name="roles[]">
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}"
                                         @if (in_array($role->id, $user->roles->pluck('id')->toArray())) selected @endif>{{ $role->name }}</option>
@@ -42,8 +42,8 @@
                         </div>
 
                         <div class="flex items-center justify-end mt-4">
-                            <x-primary-button class="ms-4">
-                                {{ __('Update') }}
+                            <x-primary-button class="ms-4 bg-sky-500 hover:bg-sky-900">
+                                {{ __('Actualizar') }}
                             </x-primary-button>
                         </div>
                     </form>

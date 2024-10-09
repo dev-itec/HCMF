@@ -2,7 +2,7 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             <i class="fa-solid fa-users-between-lines"></i> {{ __('Comité') }}
-            <x-btn-link class="ml-4 float-right" href="{{ route('users.create') }}">Añadir</x-btn-link>
+            <x-btn-link class="ml-4 float-right bg-sky-500 hover:bg-sky-900" href="{{ route('users.create') }}">Añadir</x-btn-link>
         </h2>
     </x-slot>
 
@@ -17,16 +17,16 @@
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">
-                                        Name
+                                        Nombre
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Email
+                                        Correo Electrónico
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Role
+                                        Rol
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Action
+
                                     </th>
                                 </tr>
                             </thead>
@@ -46,7 +46,7 @@
                                             @endforeach
                                         </td>
                                         <td class="px-6 py-4">
-                                            <x-btn-link href="{{route('users.edit', $user->id)}}">Edit</x-btn-link>
+                                            <x-btn-link class="bg-sky-500 hover:bg-sky-900" href="{{route('users.edit', $user->id)}}">Editar</x-btn-link>
                                         </td>
                                     </tr>
                                 @endforeach

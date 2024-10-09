@@ -42,7 +42,7 @@
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
+            <x-primary-button class="ms-3 bg-sky-500 hover:bg-sky-900">
                 {{ __('Entrar') }}
             </x-primary-button>
         </div>
