@@ -409,32 +409,28 @@ class DenunciaController extends Controller
         $denuncia = Answer::findOrFail($id);
         $identificador = $denuncia->identificador;
 
-        // Validar que haya archivos en el request
+        // Validar archivos subidos
         $request->validate([
             'evidencia.*' => 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:2048', // Validaciones de tipo y tamaño
         ]);
 
         $evidenciaPaths = [];
 
+        // Comprobar si se subieron archivos
         if ($request->hasFile('evidencia')) {
             foreach ($request->file('evidencia') as $file) {
                 $timestamp = now()->format('His');
                 $filename = "{$identificador}_{$timestamp}." . $file->getClientOriginalExtension();
-                $destinationPath = storage_path("/evidencias");
+                $destinationPath = 'evidencias'; // Dentro de storage/app/evidencias
 
-                // Crear directorio si no existe
-                if (!File::exists($destinationPath)) {
-                    File::makeDirectory($destinationPath, 0755, true);
-                }
+                // Mover el archivo al directorio de almacenamiento usando el Storage de Laravel
+                $file->storeAs($destinationPath, $filename);
 
-                // Mover el archivo al directorio de almacenamiento
-                $file->move($destinationPath, $filename);
-
-                // Almacenar el nombre del archivo para guardar en la base de datos
+                // Almacenar el nombre del archivo para la base de datos
                 $evidenciaPaths[] = $filename;
             }
 
-            // Si ya existe evidencia, combinar con los nuevos archivos
+            // Si ya existe evidencia, combinarla con los nuevos archivos
             if (!empty($denuncia->evidencia)) {
                 $evidenciaPaths = array_merge(json_decode($denuncia->evidencia, true), $evidenciaPaths);
             }
@@ -444,13 +440,14 @@ class DenunciaController extends Controller
                 'evidencia' => json_encode($evidenciaPaths),
             ]);
 
+            // Mensaje de éxito
             return back()->with('success', 'Archivos subidos correctamente.');
         }
 
+        // Manejar si no se subieron archivos
         return back()->withErrors('No se seleccionaron archivos para subir.');
     }
-    // DenunciaController.php
-    // DenunciaController.php
+
     public function uploadEvidencia(Request $request)
     {
         // Validar que cada archivo sea un archivo válido y cumpla con los tipos y tamaño permitidos

@@ -61,17 +61,6 @@
             <a href="{{ url('/') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Imagen de la empresa" class="max-w-full h-auto mx-auto block"></a>
         </div>
     @endif
-    <div>
-        @if (Route::has('login'))
-            <div class="space-x-4">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:text-blue-600 font-semibold">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><i class="fa-solid fa-right-to-bracket"></i>Log in</a>
-                @endauth
-            </div>
-        @endif
-    </div>
 </nav>
 
 <div class="container mx-auto p-6 mt-8">
