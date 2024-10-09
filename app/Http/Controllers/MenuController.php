@@ -85,6 +85,7 @@ class MenuController extends Controller
     {
         return view('app.opciones.index');
     }
+    
     public function cerrarCaso(Request $request, $id)
     {
 

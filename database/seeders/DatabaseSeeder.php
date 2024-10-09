@@ -19,5 +19,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'user@user.com',
             'password' => bcrypt('password'),
         ]);
+
+        // Acciones para dynamicTextSeeder
+        $this->call([
+            DynamicTextSeeder::class,
+        ]);
     }
 }

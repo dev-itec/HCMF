@@ -6,7 +6,7 @@
     </x-slot>
 
     <div class="container mx-auto px-4 py-6">
-        <section class="container mx-auto px-8 py-28 sm:px-12">
+        <section class="container mx-auto px-8 my-16 sm:px-12">
             <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
@@ -28,7 +28,7 @@
                 </div>
             </div>
         </section>
-        <section class="container mx-auto px-8 py-auto sm:px-12">
+        <section class="container mx-auto px-8 my-16 sm:px-12">
             <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
@@ -48,6 +48,17 @@
                 >
                     <i class="fa-solid fa-sliders fa-2xl mt-3 mb-3"></i>
                     <div class="mt-3 text-sm font-semibold">Variables</div>
+                </a>
+            </div>
+        </section>
+        <section class="container mx-auto px-8 my-16 sm:px-12">
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+                <a
+                    href="{{ url('/opciones/dynamic-text') }}"
+                    class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200"
+                >
+                    <i class="fa-solid fa-font fa-2xl mt-3 mb-3"></i>
+                    <div class="mt-3 text-sm font-semibold">Textos</div>
                 </a>
             </div>
         </section>

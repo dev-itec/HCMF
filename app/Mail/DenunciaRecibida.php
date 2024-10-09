@@ -2,10 +2,12 @@
 
 namespace App\Mail;
 
+use App\Models\DynamicText;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class DenunciaRecibida extends Mailable
 {
@@ -40,7 +42,15 @@ class DenunciaRecibida extends Mailable
      */
     public function build()
     {
-        return $this->subject('Denuncia recibida')
-            ->view('emails.denuncia_recibida'); // Se refiere a la vista del correo
+        try {
+            $dynamicText = DynamicText::where('seccion', 'email-body')->first();
+
+            if($dynamicText) {
+                return $this->subject('Denuncia recibida')
+                ->view('emails.denuncia_recibida', compact('dynamicText')); // Se refiere a la vista del correo
+            }
+        } catch (Exception $e) {
+            Log::error('Existe un error al momento de enviar el correo al denunciante: ' . $e);
+        }
     }
 }

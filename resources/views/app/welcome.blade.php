@@ -39,29 +39,36 @@
 <div class="text-4xl">
     <p class="text-gray-700 mt-8 text-center font-bold">Canal de Denuncias</p>
 </div>
-<div class="container mx-auto p-6 mt-8 flex flex-col md:flex-row">
+<div class="container mx-auto p-6 mt-8 flex flex-col justify-center items-center md:flex-row">
     <!-- Left Column -->
     <div class="md:w-1/2 md:pr-8">
-        <p class="text-gray-700">
-            <b>En {{ tenant('domain_name') }} tu voz cuenta: Denuncia segura y confidencial</b><br>
-            ¿Qué es la Ley Karin?<br>
-            La Ley 21.643 tiene por objeto prevenir, investigar y sancionar el acoso laboral, el acoso
-            sexual, así como la violencia en el trabajo, garantizando los derechos de las víctimas y
-            facilitando el acceso a la justicia.<br>
-            Presenta tu denuncia de forma fácil y segura. Nuestro portal te brinda un espacio
-            confidencial para que puedas expresar lo ocurrido.<br>
-            <b>¿Cómo presentar una denuncia?</b><br>
-            1) Completa un sencillo formulario donde podrás describir detalladamente lo sucedido.<br>
-            2) Selecciona la categoría que mejor se ajuste a tu situación para agilizar el proceso.<br>
-            3) Puedes adjuntar documentos, fotografías u otros archivos que puedan respaldar tu
-            denuncia (opcional).<br>
-            4) Al finalizar, recibirás un código único que te permitirá hacer seguimiento a tu denuncia
-            en cualquier momento. <b>¡Guárdalo en un lugar seguro!</b><br>
-            Tu denuncia es importante. Cada caso es revisado con la mayor confidencialidad y se
-            toman las medidas necesarias para proteger tu identidad.<br>
-            <b>¡No dudes en denunciar! Tu voz es fundamental para erradicar el acoso y la
-                violencia</b>
-        </p>
+        @if($dynamicText)
+            <p class="text-gray-700">
+                <b>En {{ tenant('domain_name') }} tu voz cuenta: Denuncia segura y confidencial</b><br><br>
+                {{ $dynamicText->texto }}
+            </p>
+        @else 
+            <p class="text-gray-700">
+                
+                ¿Qué es la Ley Karin?<br>
+                La Ley 21.643 tiene por objeto prevenir, investigar y sancionar el acoso laboral, el acoso
+                sexual, así como la violencia en el trabajo, garantizando los derechos de las víctimas y
+                facilitando el acceso a la justicia.<br>
+                Presenta tu denuncia de forma fácil y segura. Nuestro portal te brinda un espacio
+                confidencial para que puedas expresar lo ocurrido.<br>
+                <b>¿Cómo presentar una denuncia?</b><br>
+                1) Completa un sencillo formulario donde podrás describir detalladamente lo sucedido.<br>
+                2) Selecciona la categoría que mejor se ajuste a tu situación para agilizar el proceso.<br>
+                3) Puedes adjuntar documentos, fotografías u otros archivos que puedan respaldar tu
+                denuncia (opcional).<br>
+                4) Al finalizar, recibirás un código único que te permitirá hacer seguimiento a tu denuncia
+                en cualquier momento. <b>¡Guárdalo en un lugar seguro!</b><br>
+                Tu denuncia es importante. Cada caso es revisado con la mayor confidencialidad y se
+                toman las medidas necesarias para proteger tu identidad.<br>
+                <b>¡No dudes en denunciar! Tu voz es fundamental para erradicar el acoso y la
+                    violencia</b>
+            </p>
+        @endif
     </div>
 
     <!-- Right Column -->

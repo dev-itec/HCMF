@@ -48,9 +48,12 @@
         </div>
     </div>
 
-    <p class="text-lg">Nuestro protocolo de seguimiento de denuncias de Ley Karin</p>
-
-    <p class="text-lg">Al recibir una denuncia, garantizamos la confidencialidad e iniciaremos una investigación exhaustiva. Un equipo designado recopilará evidencia, entrevistará a las partes involucradas y elaborará un informe detallado. Se adoptarán medidas cautelares si son necesarias para protegerte o a la victima en caso de que no seas tú. Una vez concluida la investigación, se emitirá una resolución y se aplicarán las sanciones correspondientes. Se realizará un seguimiento continuo para asegurar la efectividad de las medidas adoptadas y prevenir nuevas ocurrencias. Este proceso se llevará a cabo de manera imparcial, eficiente y respetuosa con tu derechos, promoviendo ambientes laborales seguros y libres de violencia.</p>
+    @if ($dymanicText)
+        <p class="text-lg">{{ $dymanicText->texto }}</p>
+    @else
+        <p class="text-lg">Nuestro protocolo de seguimiento de denuncias de Ley Karin</p>
+        <p class="text-lg">Al recibir una denuncia, garantizamos la confidencialidad e iniciaremos una investigación exhaustiva. Un equipo designado recopilará evidencia, entrevistará a las partes involucradas y elaborará un informe detallado. Se adoptarán medidas cautelares si son necesarias para protegerte o a la victima en caso de que no seas tú. Una vez concluida la investigación, se emitirá una resolución y se aplicarán las sanciones correspondientes. Se realizará un seguimiento continuo para asegurar la efectividad de las medidas adoptadas y prevenir nuevas ocurrencias. Este proceso se llevará a cabo de manera imparcial, eficiente y respetuosa con tu derechos, promoviendo ambientes laborales seguros y libres de violencia.</p>
+    @endif
 
     <p class="text-lg font-bold mt-3">Principios que nos rigen:</p>
     <p class="text-lg">Confidencialidad: Protección de la identidad de la víctima.</p>

@@ -14,6 +14,12 @@
 <p>Identificador: {{$identificador}}</p>
 <p>Clave: {{$clave}}</p>
 
+@if($dynamicText)
+    <p>
+        {{ $dynamicText->texto }}
+    </p>
+@endif
+
 <p>
     Puede consultar el estado de su denuncia en el siguiente enlace:<br><br><br>
     <a href="{{ url('/denuncia/status?numero=' . $identificador . '&clave=' . $clave) }}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">

@@ -8,6 +8,9 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\DenunciaController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\UserController;
+use App\Http\Controllers\DynamicTextController;
+use App\Models\DynamicText;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -38,7 +41,15 @@ Route::middleware([
     */
 
     Route::get('/', function () {
-        return view('app.welcome');
+        try {
+            $dynamicText = DynamicText::where('seccion', 'home-section')->first();
+
+            if($dynamicText){
+                return view('app.welcome', compact('dynamicText'));
+            }
+        } catch (Exception $e) {
+            Log::error('Existe un error en la vista de bienvenida: ' . $e);
+        }
     });
 
     Route::get('/api/employees', function () {
@@ -108,6 +119,13 @@ Route::middleware([
             Route::put('/opciones/{tenantSetting}', [TenantSettingController::class, 'update'])->name('app.opciones.update');
             // Ruta para eliminar una configuración (destroy)
             Route::delete('/opciones/{tenantSetting}', [TenantSettingController::class, 'destroy'])->name('app.opciones.destroy');
+
+            // Para los textos dinámicos
+            Route::get('/opciones/dynamic-text', [DynamicTextController::class, 'dynamicTextView'])->name('app.opciones.dynamic-text-view');
+            Route::post('/opciones/dynamic-text/', [DynamicTextController::class, 'saveText'])->name('app.opciones.save-text');
+            Route::get('/opciones/dynamic-text/get-text/{section}', [DynamicTextController::class, 'getText'])->name('app.opciones.get-text');
+            Route::patch('/opciones/dynamic-text/{section}', [DynamicTextController::class, 'editText'])->name('app.opciones.edit-text');
+            Route::delete('/opciones/dynamic-text/{section}', [DynamicTextController::class, 'deleteText'])->name('app.opciones.delete-text');
 
         });
     });

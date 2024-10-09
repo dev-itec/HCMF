@@ -12,6 +12,7 @@ use MailerSend\Helpers\Builder\Variable;
 use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\LaravelDriver\MailerSendTrait;
 use App\Mail\DenunciaRecibida;
+use App\Models\DynamicText;
 use App\Models\Tenant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
@@ -136,13 +137,25 @@ class DenunciaController extends Controller
     }
 
 
+    /**
+     * Vista que se muestra al finalizar la creación de una denuncia
+     */
     public function completado(Request $request)
     {
-        $identificador = $request->input('identificador');
-        $clave = $request->input('clave');
+        try {
+            $identificador = $request->input('identificador');
+            $clave = $request->input('clave');
+            $dymanicText = "";
 
-        // Pasar los valores a la vista
-        return view('denuncia.completado', compact('identificador', 'clave'));
+            $dymanicText = DynamicText::where('seccion', 'end-complaint-section')->first();
+
+            if($dymanicText){
+                // Pasar los valores a la vista
+                return view('denuncia.completado', compact('identificador', 'clave', 'dymanicText'));
+            }
+        } catch (Exception $e){
+            Log::errir('Existe un error al traer la info de la denuncia completada: ' . $e);
+        }
     }
 
     public function checkStatus(Request $request)
