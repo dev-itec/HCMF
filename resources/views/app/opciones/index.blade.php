@@ -57,8 +57,8 @@
                     href="{{ url('/opciones/dynamic-text') }}"
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200"
                 >
-                    <i class="fa-solid fa-font fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Textos</div>
+                    <i class="fa-solid fa-font fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Textos</div>
                 </a>
             </div>
         </section>

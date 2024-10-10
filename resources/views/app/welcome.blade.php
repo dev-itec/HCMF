@@ -84,7 +84,7 @@
                 {{ $dynamicText->texto }}
             </p>
         @else 
-            <p class="text-gray-700">
+            <p class="text-gray-700" >
                 
                 ¿Qué es la Ley Karin?<br>
                 La Ley 21.643 tiene por objeto prevenir, investigar y sancionar el acoso laboral, el acoso
