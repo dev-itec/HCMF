@@ -1,7 +1,7 @@
 <x-tenant-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            <i class="fa-solid fa-list-check"></i> {{ __('Formulario') }}
+            <i class="fa-solid fa-list-check"></i> {{ __('Formulario Dinámico') }}
         </h2>
     </x-slot>
 
@@ -9,159 +9,116 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('questions.store') }}" method="POST" class="space-y-6">
+                    <div class="flex justify-between mb-4">
+                        <h3 class="text-lg font-semibold">Agregar Campos al Formulario</h3>
+                        <button class="bg-sky-500 text-white px-4 py-2 rounded" id="addFieldBtn">Agregar Campo</button>
+                    </div>
+
+                    <!-- Form for submitting the dynamic fields -->
+                    <form action="{{ route('questions.store') }}" method="POST" id="dynamicForm">
                         @csrf
-
-                        <div class="mb-4">
-                            <label for="label" class="block text-sm font-medium text-gray-700">Etiqueta de la Pregunta</label>
-                            <input type="text" name="label" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre de la Pregunta (slug)</label>
-                            <input type="text" name="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="type" class="block text-sm font-medium text-gray-700">Tipo de Pregunta</label>
-                            <select name="type" id="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm" required>
-                                <option value="text">Texto</option>
-                                <option value="date">Fecha</option>
-                                <option value="select">Seleccionar</option>
-                                <option value="checkbox">Checkbox</option>
-                            </select>
-                        </div>
-
-                        <!-- Campo de texto dinámico -->
-                        <div class="mb-4" id="text-input-container" style="display: none;">
-                            <label for="text-response" class="block text-sm font-medium text-gray-700">Respuesta Texto</label>
-                            <input type="text" id="text-response" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
-                        </div>
-
-                        <!-- Datepicker dinámico -->
-                        <div class="mb-4" id="date-input-container" style="display: none;">
-                            <label for="date-response" class="block text-sm font-medium text-gray-700">Fecha</label>
-                            <input type="date" id="date-response" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
-                        </div>
-
-                        <!-- Opciones dinámicas -->
-                        <div class="mb-4" id="options-container" style="display: none;">
-                            <label for="options" class="block text-sm font-medium text-gray-700">Opciones (separadas por coma)</label>
-                            <input type="text" id="options" name="options" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="order" class="block text-sm font-medium text-gray-700">Orden</label>
-                            <input type="number" name="order" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
-                        </div>
-
-                        <div class="mb-4 flex items-center">
-                            <input type="checkbox" name="required" value="1" class="h-4 w-4 text-sky-600 focus:ring-sky-500 border-gray-300 rounded">
-                            <label for="required" class="ml-2 block text-sm text-gray-700">¿Es requerida?</label>
-                        </div>
-
-                        <div>
-                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
-                                Crear Pregunta
-                            </button>
-                        </div>
+                        <ul id="formFieldsList" class="space-y-4">
+                            <!-- Campos de formulario existentes -->
+                            @foreach($questions as $question)
+                                <li class="bg-gray-50 p-4 rounded border" data-id="{{ $question->id }}">
+                                    <div class="flex justify-between items-center">
+                                        <input type="text" name="labels[]" value="{{ $question->label }}" class="field-label block w-full p-2 border-gray-300 rounded" placeholder="Etiqueta de Campo" required>
+                                        <select name="types[]" class="field-type ml-2 block w-1/3 p-2 border-gray-300 rounded" required>
+                                            <option value="text" {{ $question->type === 'text' ? 'selected' : '' }}>Texto</option>
+                                            <option value="checkbox" {{ $question->type === 'checkbox' ? 'selected' : '' }}>Checkbox</option>
+                                            <option value="select" {{ $question->type === 'select' ? 'selected' : '' }}>Select</option>
+                                        </select>
+                                        <input type="text" name="placeholders[]" value="{{ $question->placeholder }}" class="field-placeholder ml-2 block w-full p-2 border-gray-300 rounded" placeholder="Placeholder (Opcional)">
+                                        <input type="text" name="options[]" value="{{ is_array($question->options) ? implode(',', $question->options) : '' }}" class="field-options ml-2 block w-full p-2 border-gray-300 rounded" placeholder="Opciones (separadas por coma)" {{ $question->type === 'text' ? 'style=display:none;' : '' }}>
+                                    </div>
+                                </li>
+                            @endforeach
+                        </ul>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-sky-500 hover:bg-sky-600">
+                            Guardar Formulario
+                        </button>
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Template for adding new fields -->
+    <template id="fieldTemplate">
+        <li class="bg-gray-50 p-4 rounded border">
+            <div class="flex justify-between items-center">
+                <!-- Input for label -->
+                <input type="text" name="labels[]" class="field-label block w-full p-2 border-gray-300 rounded" placeholder="Etiqueta de Campo" required>
 
-    <div class="mt-8">
-        <h3 class="text-xl font-semibold mb-4">Preguntas</h3>
-        <ul id="question-list" class="space-y-2">
-            {{ debugbar()->info($questions) }}
-            @foreach ($questions as $question)
-                <li class="flex items-center justify-between p-4 bg-white shadow rounded border border-gray-200">
-                    <span class="text-gray-900">{{ $question->label }}</span>
-                    <div class="space-x-2">
-                        <a href="{{ route('questions.edit', $question->id) }}" class="text-blue-500 hover:text-blue-700">
-                            <i class="fas fa-edit"></i>
-                            <span class="sr-only">Editar</span>
-                        </a>
-                        <form action="{{ route('questions.destroy', $question->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            @method('DELETE')
-                            <button class="btn btn-danger">
-                                <i class="fas fa-trash-alt"></i> <!-- Icono de fontawesome -->
-                            </button>
-                        </form>
-                    </div>
-                </li>
-            @endforeach
-        </ul>
-    </div>
+                <!-- Input for type -->
+                <select name="types[]" class="field-type ml-2 block w-1/3 p-2 border-gray-300 rounded" required>
+                    <option value="text">Texto</option>
+                    <option value="checkbox">Checkbox</option>
+                    <option value="select">Select</option>
+                </select>
 
+                <!-- Input for placeholder -->
+                <input type="text" name="placeholders[]" class="field-placeholder ml-2 block w-full p-2 border-gray-300 rounded" placeholder="Placeholder (Opcional)">
 
-</x-tenant-app-layout>
+                <!-- Input for options (only for select/checkbox) -->
+                <input type="text" name="options[]" class="field-options ml-2 block w-full p-2 border-gray-300 rounded" placeholder="Opciones (separadas por coma)" style="display: none;">
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Mostrar u ocultar el campo de opciones dependiendo del tipo de pregunta seleccionada
-        document.querySelector('select[name="type"]').addEventListener('change', function () {
-            var opcionesContainer = document.getElementById('opciones-container');
-            if (this.value === 'select' || this.value === 'checkbox') {
-                opcionesContainer.style.display = 'block';
-            } else {
-                opcionesContainer.style.display = 'none';
-            }
-        });
+                <!-- Remove field button -->
+                <button type="button" class="ml-2 text-red-500 remove-field"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </li>
+    </template>
 
-        // Habilitar drag and drop con Sortable.js
-        var el = document.getElementById('question-list');
-        if (el) {
-            var sortable = Sortable.create(el, {
-                animation: 150,
-                onEnd: function (evt) {
-                    let order = [];
-                    document.querySelectorAll('#question-list li').forEach((element, index) => {
-                        order.push({ id: element.getAttribute('data-id'), position: index });
-                    });
+    <!-- Import Sortable.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 
-                    // Actualizar el orden en el backend
-                    fetch('{{ route('questions.updateOrder') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({ questions: order })
-                    }).then(response => response.json()).then(data => {
-                        if (data.success) {
-                            alert('Orden actualizado');
-                        } else {
-                            alert('Error al actualizar el orden');
-                        }
-                    });
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const formFieldsList = document.getElementById('formFieldsList');
+            const fieldTemplate = document.getElementById('fieldTemplate').content;
+            const addFieldBtn = document.getElementById('addFieldBtn');
+            const deletedQuestionsInput = document.getElementById('deletedQuestions');
+            let deletedQuestions = [];
+
+            // Add new field on button click
+            addFieldBtn.addEventListener('click', function () {
+                const newField = fieldTemplate.cloneNode(true);
+                formFieldsList.appendChild(newField);
+            });
+
+            // Enable drag-and-drop sorting using Sortable.js
+            Sortable.create(formFieldsList, {
+                animation: 150
+            });
+
+            // Show/hide options input based on field type
+            formFieldsList.addEventListener('change', function (e) {
+                if (e.target.classList.contains('field-type')) {
+                    const optionsInput = e.target.closest('li').querySelector('.field-options');
+                    if (e.target.value === 'select' || e.target.value === 'checkbox') {
+                        optionsInput.style.display = 'block';
+                    } else {
+                        optionsInput.style.display = 'none';
+                    }
                 }
             });
-        }
-    });
-</script>
-<script>
-    document.getElementById('type').addEventListener('change', function() {
-        var type = this.value;
-        var textInput = document.getElementById('text-input-container');
-        var dateInput = document.getElementById('date-input-container');
-        var optionsContainer = document.getElementById('options-container');
 
-        // Ocultar todos los campos
-        textInput.style.display = 'none';
-        dateInput.style.display = 'none';
-        optionsContainer.style.display = 'none';
+            // Remove field functionality
+            formFieldsList.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-field')) {
+                    const questionId = e.target.getAttribute('data-id');
 
-        // Mostrar los campos según el tipo seleccionado
-        if (type === 'text') {
-            textInput.style.display = 'block';
-        } else if (type === 'date') {
-            dateInput.style.display = 'block';
-        } else if (type === 'select' || type === 'checkbox') {
-            optionsContainer.style.display = 'block';
-        }
-    });
-</script>
+                    // If question has an ID (i.e., it exists in the database), mark it for deletion
+                    if (questionId) {
+                        deletedQuestions.push(questionId);
+                        deletedQuestionsInput.value = deletedQuestions.join(',');
+                    }
+
+                    // Remove field from UI
+                    e.target.closest('li').remove();
+                }
+            });
+        });
+    </script>
+</x-tenant-app-layout>

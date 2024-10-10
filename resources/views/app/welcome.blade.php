@@ -6,19 +6,55 @@
     <title>Canal de Denuncias</title>
     <link rel="shortcut icon" href="https://home.hcmfront.com/hubfs/favicon@3x.png">
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Agrega esto en el <head> de tu HTML -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @vite('resources/css/app.css')
     <style>
         body {
             font-family: 'Maven Pro', sans-serif;
         }
     </style>
+    {!! NoCaptcha::renderJs() !!}
 </head>
 {{debugbar()->info(tenant())}}
 <body class="bg-white text-gray-900 antialiased">
 
 <nav class="bg-white shadow-md p-6 flex justify-between items-center">
+    @php
+        // Configura la URL de la API y los encabezados
+        $apiKey = tenant()->api_key;
+        $url = "https://api.hcmfront.com/v1/company/";
+        $headers = [
+            "Authorization: Token $apiKey",
+            "Content-Type: application/json"
+        ];
+
+        // Realiza la solicitud a la API
+        $response = file_get_contents($url, false, stream_context_create([
+            'http' => [
+                'header'  => implode("\r\n", $headers),
+                'method'  => 'GET',
+            ]
+        ]));
+
+        // Decodifica la respuesta JSON
+        $data = json_decode($response, true);
+
+        // Obtén la URL de la imagen
+        $imagenUrl = $data[0]['imagen'] ?? '';
+    @endphp
     <div>
-        <img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Logo" class="h-12">
+        @if (!empty($imagenUrl))
+            <div>
+                <img src="{{ $imagenUrl }}" alt="Logo" class="h-12">
+            </div>
+        @else
+            <div class="text-center mb-8">
+                <img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Logo" class="h-12">
+            </div>
+        @endif
     </div>
     <div>
         @if (Route::has('login'))
@@ -82,15 +118,56 @@
         <p class="text-gray-700">Ingresa el número y clave proporcionada.</p>
 
         <!-- Form to handle submission -->
-        <form action="{{ route('denuncia.status') }}" method="GET">
-            <input type="text" name="numero" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Numero de denuncia">
-            <input type="text" name="clave" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Clave">
+        <form id="statusForm" action="{{ route('denuncia.status') }}" method="GET">
+            <input type="text" name="numero" id="numero" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Numero de denuncia">
+            <input type="text" name="clave" id="clave" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" placeholder="Clave">
 
             <!-- Submit button inside the form -->
+            <div class="flex justify-start mt-1 mb-1">{!! NoCaptcha::display() !!}</div>
             <button type="submit" class="mt-3 text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-green-200 dark:focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Consultar</button>
         </form>
+        @if ($errors->has('g-recaptcha-response'))
+            <span class="help-block text-danger" role="alert">
+                <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+            </span>
+        @endif
+        @if ($errors->any())
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ $errors->first() }}'
+                });
+            </script>
+        @endif
     </div>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusForm = document.getElementById('statusForm');
+
+        statusForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Evita el envío del formulario hasta que validemos
+
+            const numero = document.getElementById('numero').value.trim();
+            const clave = document.getElementById('clave').value.trim();
+
+            // Validar que los campos no estén vacíos
+            if (numero === '' || clave === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Los campos no pueden estar en blanco.'
+                });
+                return; // Detiene la ejecución
+            }
+
+            // Si todos los campos están completos, puedes proceder a enviar el formulario
+            statusForm.submit(); // Envía el formulario
+        });
+    });
+</script>
+
 </body>
 </html>

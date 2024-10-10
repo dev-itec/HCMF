@@ -40,6 +40,7 @@
                         </a>
 
                         <a href="{{ route('questions.create') }}" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group
+                        {{--<a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group--}}
                            {{ request()->routeIs('questions.create') ? 'bg-sky-500 text-white' : 'text-gray-900 hover:text-white hover:bg-sky-500' }}">
                             <i class="fa-solid fa-list-check mr-3"></i> Formulario
                         </a>

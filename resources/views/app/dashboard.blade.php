@@ -86,7 +86,7 @@
                 labels: {!! json_encode(array_keys($categorizacionDenuncias)) !!}, // Categorías
                 datasets: [{
                     data: {!! json_encode(array_values($categorizacionDenuncias)) !!}, // Totales por categoría
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
                     hoverOffset: 4
                 }]
             },
@@ -99,6 +99,7 @@
                 }
             }
         });
+
 
         // Gráfico de pie - Género del Denunciante
         var ctxGenero = document.getElementById('generoDenunciante').getContext('2d');

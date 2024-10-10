@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Denuncia Completada</title>
+    <link rel="shortcut icon" href="https://home.hcmfront.com/hubfs/favicon@3x.png">
     <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     @vite('resources/css/app.css')
     <style>
@@ -14,22 +15,39 @@
     </style>
 </head>
 <body class="bg-white text-gray-900 antialiased">
+@php
+    // Configura la URL de la API y los encabezados
+    $apiKey = tenant()->api_key;
+    $url = "https://api.hcmfront.com/v1/company/";
+    $headers = [
+        "Authorization: Token $apiKey",
+        "Content-Type: application/json"
+    ];
 
+    // Realiza la solicitud a la API
+    $response = file_get_contents($url, false, stream_context_create([
+        'http' => [
+            'header'  => implode("\r\n", $headers),
+            'method'  => 'GET',
+        ]
+    ]));
+
+    // Decodifica la respuesta JSON
+    $data = json_decode($response, true);
+
+    // Obtén la URL de la imagen
+    $imagenUrl = $data[0]['imagen'] ?? '';
+@endphp
 <nav class="bg-white shadow-md p-6 flex justify-between items-center">
-    <div>
-        <img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Logo" class="h-12">
-    </div>
-    <div>
-        @if (Route::has('login'))
-            <div class="space-x-4">
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><i class="fa-solid fa-bars"></i>Panel</a>
-                @else
-                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><i class="fa-solid fa-right-to-bracket"></i>Entrar</a>
-                @endauth
-            </div>
-        @endif
-    </div>
+    @if (!empty($imagenUrl))
+        <div>
+            <a href="{{ url('/') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><img src="{{ $imagenUrl }}" alt="Logo" class="h-12"></a>
+        </div>
+    @else
+        <div class="text-center mb-8">
+            <a href="{{ url('/') }}" class="text-gray-600 hover:text-blue-600 font-semibold"><img src="https://home.hcmfront.com/hs-fs/hubfs/logo_hcm.png?width=320&height=80&name=logo_hcm.png" alt="Imagen de la empresa" class="max-w-full h-auto mx-auto block"></a>
+        </div>
+    @endif
 </nav>
 
 <div class="text-4xl">

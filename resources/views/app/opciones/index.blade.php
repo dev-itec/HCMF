@@ -11,20 +11,20 @@
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
                 >
-                    <i class="fa-solid fa-satellite-dish fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Conexion API</div>
+                    <i class="fa-solid fa-satellite-dish fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Conexion API</div>
                 </div>
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
                 >
-                    <i class="fa-solid fa-file-arrow-up fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Subida masiva</div>
+                    <i class="fa-solid fa-file-arrow-up fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Subida masiva</div>
                 </div>
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
                 >
-                    <i class="fa-solid fa-bell-concierge fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Notificaciones</div>
+                    <i class="fa-solid fa-bell-concierge fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Notificaciones</div>
                 </div>
             </div>
         </section>
@@ -33,21 +33,21 @@
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
                 >
-                    <i class="fa-solid fa-highlighter fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Apariencia</div>
+                    <i class="fa-solid fa-highlighter fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Apariencia</div>
                 </div>
                 <div
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200 open-modal"
                 >
-                    <i class="fa-solid fa-list-check fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Formulario</div>
+                    <i class="fa-solid fa-list-check fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Formulario</div>
                 </div>
                 <a
                     href="{{ url('/opciones/vars') }}"
                     class="flex cursor-pointer flex-col items-center justify-start rounded-lg bg-slate-50 py-5 px-6 text-center text-slate-800 shadow-slate-200 transition hover:bg-white hover:shadow-lg hover:shadow-slate-200"
                 >
-                    <i class="fa-solid fa-sliders fa-2xl mt-3 mb-3"></i>
-                    <div class="mt-3 text-sm font-semibold">Variables</div>
+                    <i class="fa-solid fa-sliders fa-2xl mt-3 mb-3 text-sky-500"></i>
+                    <div class="mt-3 text-sm font-semibold text-sky-500">Variables</div>
                 </a>
             </div>
         </section>
@@ -65,7 +65,7 @@
     </div>
 
     <!-- Modal -->
-    <div id="myModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-500 bg-opacity-75">
+    <div id="modalOpciones" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-gray-500 bg-opacity-75">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h3 class="text-lg font-semibold">Opciones</h3>
             <p class="mt-2 text-sm text-gray-600">Contenido del modal aquí.</p>

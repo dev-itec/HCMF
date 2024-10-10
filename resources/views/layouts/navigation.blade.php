@@ -14,8 +14,11 @@
             <div class="flex flex-col flex-1 px-3 mt-6">
                 <div class="space-y-4">
                     <nav class="flex-1 space-y-2">
-                        <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group
+                        {{--<a href="{{ route('dashboard') }}" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group
                                {{ request()->routeIs('dashboard') ? 'bg-sky-500 text-white' : 'text-gray-900 hover:text-white hover:bg-sky-500' }}">
+                            <i class="fa-solid fa-display mr-3"></i> Panel
+                        </a>--}}
+                        <a href="#" class="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-lg group">
                             <i class="fa-solid fa-display mr-3"></i> Panel
                         </a>
                     </nav>

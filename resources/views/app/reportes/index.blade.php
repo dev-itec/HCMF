@@ -18,7 +18,7 @@
                                 <th scope="col" class="px-6 py-3">Denunciante</th>
                                 <th scope="col" class="px-6 py-3">Personas Involucradas</th>
                                 <th scope="col" class="px-6 py-3">Responsable</th>
-                                <th scope="col" class="px-6 py-3">Status</th>
+                                <th scope="col" class="px-6 py-3">Estado</th>
                                 <th scope="col" class="px-6 py-3">Acciones</th>
                             </tr>
                             </thead>
@@ -35,7 +35,7 @@
                                         @php
                                             $statusColor = match($denuncia->status) {
                                                 'pendiente' => 'bg-red-500 text-white',
-                                                'en_proceso' => 'bg-yellow-500 text-black',
+                                                'en proceso' => 'bg-yellow-500 text-black',
                                                 'informacion solicitada' => 'bg-orange-500 text-white',
                                                 'resuelta' => 'bg-green-500 text-white',
                                                 default => 'bg-gray-500 text-white',
@@ -55,9 +55,9 @@
                                                 Ver Expediente
                                             </button>
                                         @else
-                                            <x-btn-link 
-                                                class="bg-sky-500" 
-                                                href="javascript:void(0);" 
+                                            <x-btn-link
+                                                class="bg-sky-500"
+                                                href="javascript:void(0);"
                                                 onclick="openModal({
                                                     id: '{{ $denuncia->id }}',
                                                     nombre_completo: '{{ $denuncia->nombre_completo }}',
@@ -71,18 +71,20 @@
                                             </x-btn-link>
                                         @endif
                                     </td>
-
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
+                    </div>
+                    <div class="mt-4">
+                        {{ $answers->links() }}
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    
+
     <!-- Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
         <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
@@ -93,42 +95,12 @@
         </div>
     </div>
 
-    {{-- <!-- Modal -->
-    <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg relative">
-            <!-- Botón de cierre "X" -->
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                &times; <!-- Símbolo de la X -->
-            </button>
-
-            <h3 class="text-xl font-semibold mb-4">Cerrar Caso {{ $denuncia->identificador }}</h3>
-            <div id="modalContent" class="text-center sm:text-left mb-14">
-                <!-- Aquí se llenará la información -->
-            </div>
-            <form id="closeCaseForm" enctype="multipart/form-data">
-                <h5 class="text-1xl font-semibold">Texto de Resolución:</h5>
-                <textarea id="textoResolucion" class="w-full p-2 mt-2 border border-gray-300 rounded" rows="3" required></textarea>
-
-                <h5 class="text-1xl font-semibold mt-3">Adjuntar PDF:</h5>
-                <input type="file" id="archivoPdf" class="mt-2" accept="application/pdf">
-
-                <button onclick="confirmCloseCase('{{ $denuncia->id }}')" class="mt-4 bg-green-500 text-white px-4 py-2 rounded">Cerrar Caso</button>
-            </form>
-        </div>
-    </div> --}}
-    <!-- Modal para ver el PDF -->
-    {{-- <div id="fileModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-lg">
-            <h3 class="text-xl font-semibold mb-4">Ver Expediente</h3>
-            <iframe id="pdfViewer" src="" width="100%" height="500px"></iframe>
-        </div>
-    </div> --}}
 
 
     <!-- Incluir SweetAlert2 desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>        
+    <script>
         function openModal(denuncia) {
             const content = `
             <h5 class="text-1xl font-semibold">Denunciante:</h5>
@@ -138,20 +110,20 @@
             <h5 class="text-1xl font-semibold">Fecha denuncia:</h5>
             <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
             <form id="closeCaseForm" enctype="multipart/form-data">
-                <h5 class="text-1xl font-semibold">Texto de Resolución:</h5>
+                <h5 class="text-1xl font-semibold">Resolución:</h5>
                 <textarea id="textoResolucion" class="w-full p-2 mt-2 border border-gray-300 rounded" rows="3" required></textarea>
 
                 <h5 class="text-1xl font-semibold mt-3">Adjuntar PDF:</h5>
                 <input type="file" id="archivoPdf" class="mt-2" accept="application/pdf">
 
                 <div class="flex items-center justify-items-left">
-                    <button id="closeCaseButton" class="mt-4 bg-green-500 text-white px-4 py-2 rounded mr-2">Cerrar Caso</button>
-                    <button onclick="closeFileModal()" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cancelar</button>
+                    <button id="closeCaseButton" class="mt-4 bg-sky-500 text-white px-4 py-2 rounded mr-2">Cerrar Caso</button>
+                    <button onclick="closeFileModal()" class="mt-4 bg-sky-900 text-white px-4 py-2 rounded">Cancelar</button>
                 </div>
             </form>
             `;
             document.getElementById('modalContent').innerHTML = content;
-            document.querySelector('#detailModal h3').textContent = `Cerrar Caso ${denuncia.id}`;
+            document.querySelector('#detailModal h3').textContent = `Cerrar Caso ${denuncia.nombre_completo}`;
             document.getElementById('detailModal').classList.remove('hidden');
 
             document.getElementById('closeCaseButton').addEventListener('click', async (event) => {
@@ -166,11 +138,6 @@
 
         // Función para ver el expediente
         function openFileModal(pdfPath) {
-            // const pdfViewer = document.getElementById('pdfViewer');
-            // pdfViewer.src = `/storage/${pdfPath}`; // Asegúrate de que el archivo PDF esté accesible desde la carpeta 'public/storage'
-            // document.getElementById('fileModal').classList.remove('hidden');
-
-            // console.log('Ese es el nombre del archivo'  + pdfPath);
             if(pdfPath){
                 const url = `{{ route('file.reportes.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
                 window.location.href = url;
@@ -186,15 +153,6 @@
         // Función para descargar el expediente
         function downloadExpediente(pdfPath) {
             console.log('PdfPath: ' + pdfPath);
-            // const link = document.createElement('a');
-
-            // // Ajustar la ruta para que apunte a 'public/storage/resoluciones'
-            // // const publicPath = pdfPath.replace('storage/', 'storage/'); // Ajusta según el almacenamiento en Laravel
-            // link.href = `/storage/${publicPath}`;  // Asegurarse que la ruta es accesible públicamente
-            // link.download = publicPath.split('/').pop(); // Nombre del archivo
-            // document.body.appendChild(link);
-            // link.click();
-            // document.body.removeChild(link);
 
             if(pdfPath){
                 const url = `{{ route('file.reportes.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
@@ -224,6 +182,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
                 confirmButtonText: 'Sí, cerrar caso!'
             });
 
@@ -279,7 +238,7 @@
                 }
             }
         }
-    
+
         // Envia data a servidor
         async function sendCaseToServer(denunciaId, formData) {
             try {
@@ -303,7 +262,7 @@
                 return false;
             }
         }
-    
+
 
         function closeCase() {
             const resolutionText = document.getElementById('resolutionText').value;
