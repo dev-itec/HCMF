@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 
 class DenunciaController extends Controller
@@ -498,6 +500,16 @@ class DenunciaController extends Controller
         }
 
         return response()->json(['message' => 'Archivo no encontrado.'], 404);
+    }
+
+    public function downloadPdf($id)
+    {
+        $denuncia = Answer::findOrFail($id);
+
+        // Generar el PDF a partir de una vista
+        $pdf = Pdf::loadView('app.denuncias.pdf', compact('denuncia'));
+
+        return $pdf->download('denuncia_' . $denuncia->identificador . '.pdf');
     }
 
 }

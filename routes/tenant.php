@@ -78,6 +78,7 @@ Route::middleware([
         Route::get('/reportes', [MenuController::class, 'reportes'])->name('reportes.index');
         Route::post('/denuncias/{id}/cerrar', [MenuController::class, 'cerrarCaso'])->name('denuncias.cerrar');
         Route::get('/denuncias/{id}/ver-pdf', [MenuController::class, 'verPdf']);
+        Route::get('/denuncias/{id}/pdf', [DenunciaController::class, 'downloadPdf'])->name('denuncia.pdf');
 
         Route::get('/resolucion/{tenant}/{file}', [MenuController::class, 'download']);
 

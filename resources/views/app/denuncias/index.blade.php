@@ -42,43 +42,52 @@
                                             };
                                         @endphp
                                         <span id="status-badge-{{ $denuncia->id }}" class="px-2 py-1 rounded-full text-xs font-semibold {{ $statusColor }} whitespace-nowrap">
-                                            {{ ucfirst($denuncia->status) }}
-                                        </span>
+                                                {{ ucfirst($denuncia->status) }}
+                                            </span>
                                     </td>
 
-                                    <td class="px-6 py-4 bg-ye">
+                                    <td class="px-6 py-4 flex space-x-2">
+                                        <!-- Botón para ver la denuncia -->
                                         <x-btn-link
                                             class="bg-sky-500"
                                             href="javascript:void(0);"
                                             onclick="openModal({
-                                                id: '{{ $denuncia->id }}',
-                                                nombre_completo: '{{ $denuncia->nombre_completo }}',
-                                                rut: '{{ $denuncia->rut }}',
-                                                genero: '{{ $denuncia->genero }}',
-                                                tipo_denuncia: {{ json_encode($denuncia->tipo_denuncia) }},
-                                                personas_involucradas: '{{ $denuncia->personas_involucradas }}',
-                                                created_at: '{{ $denuncia->created_at }}',
-                                                responsable: '{{ $denuncia->responsable }}',
-                                                status: '{{ $denuncia->status }}',
-                                                evidencia: '{{ $denuncia->evidencia }}',
-                                                cargo: '{{ $denuncia->cargo }}',
-                                                relacion: '{{ $denuncia->relacion }}',
-                                                correo_electronico: '{{ $denuncia->correo_electronico }}',
-                                                detalles_incidente: '{{ $denuncia->detalles_incidente }}',
-                                                fecha_exacta: '{{ $denuncia->fecha_exacta }}',
-                                                fecha_aproximada: '{{ $denuncia->fecha_aproximada }}',
-                                                hora_incidente: '{{ $denuncia->hora_incidente }}',
-                                                lugar_incidente: '{{ $denuncia->lugar_incidente }}',
-                                                descripcion_caso: '{{ $denuncia->descripcion_caso }}',
-                                                testigos: '{{ $denuncia->testigos }}',
-                                                como_se_entero: '{{ $denuncia->como_se_entero }}',
-                                                impacto_empresa: {{ json_encode($denuncia->impacto_empresa)}},
-                                                impacto_personal: {{ json_encode($denuncia->impacto_personal)}},
-                                                accion_esperada: {{ json_encode($denuncia->accion_esperada)}}
-                                            })"
+                                                    id: '{{ $denuncia->id }}',
+                                                    nombre_completo: '{{ $denuncia->nombre_completo }}',
+                                                    rut: '{{ $denuncia->rut }}',
+                                                    genero: '{{ $denuncia->genero }}',
+                                                    tipo_denuncia: {{ json_encode($denuncia->tipo_denuncia) }},
+                                                    personas_involucradas: '{{ $denuncia->personas_involucradas }}',
+                                                    created_at: '{{ $denuncia->created_at }}',
+                                                    responsable: '{{ $denuncia->responsable }}',
+                                                    status: '{{ $denuncia->status }}',
+                                                    evidencia: '{{ $denuncia->evidencia }}',
+                                                    cargo: '{{ $denuncia->cargo }}',
+                                                    relacion: '{{ $denuncia->relacion }}',
+                                                    correo_electronico: '{{ $denuncia->correo_electronico }}',
+                                                    detalles_incidente: '{{ $denuncia->detalles_incidente }}',
+                                                    fecha_exacta: '{{ $denuncia->fecha_exacta }}',
+                                                    fecha_aproximada: '{{ $denuncia->fecha_aproximada }}',
+                                                    hora_incidente: '{{ $denuncia->hora_incidente }}',
+                                                    lugar_incidente: '{{ $denuncia->lugar_incidente }}',
+                                                    descripcion_caso: '{{ $denuncia->descripcion_caso }}',
+                                                    testigos: '{{ $denuncia->testigos }}',
+                                                    como_se_entero: '{{ $denuncia->como_se_entero }}',
+                                                    impacto_empresa: {{ json_encode($denuncia->impacto_empresa)}},
+                                                    impacto_personal: {{ json_encode($denuncia->impacto_personal)}},
+                                                    accion_esperada: {{ json_encode($denuncia->accion_esperada)}}
+                                                })"
                                         >
                                             <i class="fas fa-eye"></i>
                                         </x-btn-link>
+
+                                        {{--<!-- Botón para descargar en PDF -->
+                                        <x-btn-link
+                                            class="bg-sky-900 hover:bg-sky-950"
+                                            href="{{ route('denuncia.pdf', ['id' => $denuncia->id]) }}"
+                                        >
+                                            <i class="fas fa-file-pdf"></i>
+                                        </x-btn-link>--}}
                                     </td>
                                 </tr>
                             @endforeach
