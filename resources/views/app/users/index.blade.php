@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <x-tenant-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -46,8 +47,26 @@
                                             @endforeach
                                         </td>
                                         <td class="px-6 py-4">
-                                            <x-btn-link class="bg-sky-500 hover:bg-sky-900" href="{{route('users.edit', $user->id)}}">Editar</x-btn-link>
+                                            <!-- Botón Editar -->
+                                            <x-btn-link class="bg-sky-500 hover:bg-sky-900" href="{{route('users.edit', $user->id)}}">
+                                                <i class="fa-solid fa-edit"></i>
+                                            </x-btn-link>
+
+                                            <!-- Botón Eliminar -->
+                                            <button class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded ml-2 delete-user" data-id="{{$user->id}}">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                            <!-- Botón Recuperar contraseña -->
+                                            <button class="bg-amber-500 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded reset-password" data-id="{{ $user->id }}">
+                                                <i class="fa-solid fa-envelope"></i>
+                                            </button>
+
+                                            <form id="delete-form-{{$user->id}}" action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:none;">
+                                                @csrf
+                                                @method('DELETE')
+                                            </form>
                                         </td>
+
                                     </tr>
                                 @endforeach
 
@@ -61,3 +80,84 @@
         </div>
     </div>
 </x-tenant-app-layout>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Agregar evento click a todos los botones de eliminar
+        document.querySelectorAll('.delete-user').forEach(function (button) {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+                const deleteForm = document.getElementById(`delete-form-${userId}`);
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Esta acción no se puede deshacer.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteForm.submit();
+                    }
+                });
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Escuchar el evento click en los botones de "Enviar enlace de restablecimiento"
+        document.querySelectorAll('.reset-password').forEach(function(button) {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-id');
+
+                // Confirmar con SweetAlert2 antes de enviar el enlace
+                Swal.fire({
+                    title: '¿Enviar enlace de restablecimiento?',
+                    text: "Se enviará un enlace de recuperación de contraseña al correo del usuario.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, enviar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/users/${userId}/password/reset`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Enlace Enviado!',
+                                        'Se ha enviado un enlace de restablecimiento de contraseña al correo del usuario.',
+                                        'success'
+                                    );
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'No se pudo enviar el enlace. Por favor, inténtalo de nuevo más tarde.',
+                                        'error'
+                                    );
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire(
+                                    'Error!',
+                                    'Hubo un problema al enviar el enlace.',
+                                    'error'
+                                );
+                            });
+                    }
+                });
+            });
+        });
+    });
+</script>
+

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\App\TenantSettingController;
+use App\Http\Controllers\FormController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\DenunciaController;
@@ -12,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
+use App\Http\Controllers\App\UserPasswordController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -60,8 +64,13 @@ Route::middleware([
     Route::post('/denuncia/store', [DenunciaController::class, 'store'])->name('denuncia.store');
     Route::get('/denuncia/completado', [DenunciaController::class, 'completado'])->name('denuncia.completado');
 
+    Route::get('/denuncia/{id}', [FormController::class, 'show'])->name('forms.show');
+    Route::post('/answers', [AnswerController::class, 'store']);
+
     Route::post('/upload-evidencia', [DenunciaController::class, 'uploadEvidencia'])->name('upload.evidencia');
     Route::delete('/delete-evidencia', [DenunciaController::class, 'deleteEvidencia'])->name('delete.evidencia');
+
+    Route::post('/users/{user}/password/reset', [UserPasswordController::class, 'sendResetLink'])->name('users.password.reset');
 
 
     Route::middleware('auth')->group(function () {
@@ -116,6 +125,17 @@ Route::middleware([
             Route::put('/opciones/{tenantSetting}', [TenantSettingController::class, 'update'])->name('app.opciones.update');
             // Ruta para eliminar una configuración (destroy)
             Route::delete('/opciones/{tenantSetting}', [TenantSettingController::class, 'destroy'])->name('app.opciones.destroy');
+
+            Route::resource('forms', FormController::class);
+            Route::get('forms/create', [FormController::class, 'create'])->name('forms.create');
+            Route::post('forms', [FormController::class, 'store'])->name('forms.store');
+            Route::get('forms', [FormController::class, 'index'])->name('forms.index');
+            Route::get('forms/{form}/edit', [FormController::class, 'edit'])->name('forms.edit');
+            Route::put('/forms/{id}', [FormController::class, 'update'])->name('forms.update');
+
+
+
+
 
         });
     });

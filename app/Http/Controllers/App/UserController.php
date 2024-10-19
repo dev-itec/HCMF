@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
+use App\Mail\UserCreated;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -33,18 +35,29 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // validation
+        // Validación
         $validatedData = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|max:255|unique:users,email',
-            'password'    => ['required', 'confirmed', Rules\Password::defaults()]
+            'password'    => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        User::create($validatedData);
+        // Obtener la contraseña en texto plano antes de cifrarla
+        $plainPassword = $request->password;
 
+        // Crear el usuario con la contraseña cifrada
+        $user = User::create([
+            'name'     => $validatedData['name'],
+            'email'    => $validatedData['email'],
+            'password' => bcrypt($validatedData['password']), // Cifrar la contraseña
+        ]);
+
+        // Enviar correo con la contraseña original
+        \Mail::to($user->email)->send(new \App\Mail\UserCreated($user, $plainPassword));
 
         return redirect()->route('users.index');
     }
+
 
     /**
      * Display the specified resource.
@@ -88,6 +101,11 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        // Elimina el usuario
+        $user->delete();
+
+        // Redirige con un mensaje de éxito
+        return redirect()->route('users.index')->with('success', 'Usuario eliminado correctamente.');
     }
+
 }
