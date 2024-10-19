@@ -20,7 +20,6 @@ class CasoCerradoMailable extends Mailable
     public $tipo_denuncia;
     public $identificador;
     public $clave;
-    public $pdfPath;
 
     /**
      * Create a new message instance.
@@ -31,7 +30,6 @@ class CasoCerradoMailable extends Mailable
     public function __construct(Answer $denuncia, $pdfPath, $fecha, $hora)
     {
         $this->denuncia = $denuncia;
-        $this->pdfPath = $pdfPath;
         $fecha = Carbon::now()->format('d/m/Y');
         $hora = Carbon::now()->format('H:i:s');
     }
@@ -48,11 +46,6 @@ class CasoCerradoMailable extends Mailable
             ->with([
                 'denuncia' => $this->denuncia,
             ]);
-
-        // Adjuntar el PDF si existe
-        if ($this->pdfPath) {
-            $email->attach(storage_path("/reportes/{$this->pdfPath}"));
-        }
 
         return $email;
     }
