@@ -5,7 +5,7 @@
             <i class="fa-solid fa-chart-simple"></i> {{ __('Reporte') }}
         </h2>
     </x-slot>
-
+    
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -13,66 +13,74 @@
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Identificador</th>
-                                <th scope="col" class="px-6 py-3">Denunciante</th>
-                                <th scope="col" class="px-6 py-3">Personas Involucradas</th>
-                                <th scope="col" class="px-6 py-3">Responsable</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                                <th scope="col" class="px-6 py-3">Acciones</th>
-                            </tr>
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Identificador</th>
+                                    <th scope="col" class="px-6 py-3">Denunciante</th>
+                                    <th scope="col" class="px-6 py-3">Personas Involucradas</th>
+                                    <th scope="col" class="px-6 py-3">Responsable</th>
+                                    <th scope="col" class="px-6 py-3">Estado</th>
+                                    <th scope="col" class="px-6 py-3">Acciones</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @foreach ($answers as $denuncia)
-                                <tr id="denuncia-{{ $denuncia->id }}" class="bg-white border-b">
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                        {{ $denuncia->identificador }}
-                                    </th>
-                                    <td class="px-6 py-4">{{ $denuncia->nombre_completo }}</td>
-                                    <td class="px-6 py-4">{{ $denuncia->personas_involucradas }}</td>
-                                    <td class="px-6 py-4">{{ $denuncia->responsable }}</td>
-                                    <td class="px-6 py-4">
-                                        @php
-                                            $statusColor = match($denuncia->status) {
-                                                'pendiente' => 'bg-red-500 text-white',
-                                                'en proceso' => 'bg-yellow-500 text-black',
-                                                'informacion solicitada' => 'bg-orange-500 text-white',
-                                                'resuelta' => 'bg-green-500 text-white',
-                                                default => 'bg-gray-500 text-white',
-                                            };
-                                        @endphp
-                                        <span id="status-badge-{{ $denuncia->id }}" class="px-2 py-1 rounded-full text-sm font-semibold {{ $statusColor }}">
-                                            {{ ucfirst($denuncia->status) }}
-                                        </span>
-                                    </td>
+                                @foreach ($answers as $denuncia)
+                                
+                                    <tr id="denuncia-{{ $denuncia->id }}" class="bg-white border-b">
+                                        <th scope="row"
+                                            class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                            {{ $denuncia->identificador }}
+                                        </th>
+                                        <td class="px-6 py-4">{{ $denuncia->nombre_completo }}</td>
+                                        <td class="px-6 py-4">{{ $denuncia->personas_involucradas }}</td>
+                                        <td class="px-6 py-4">{{ $denuncia->responsable }}</td>
+                                        <td class="px-6 py-4">
+                                            @php
+                                                $statusColor = match ($denuncia->status) {
+                                                    'pendiente' => 'bg-red-500 text-white',
+                                                    'en proceso' => 'bg-yellow-500 text-black',
+                                                    'informacion solicitada' => 'bg-orange-500 text-white',
+                                                    'resuelta' => 'bg-green-500 text-white',
+                                                    default => 'bg-gray-500 text-white',
+                                                };
+                                            @endphp
+                                            <span id="status-badge-{{ $denuncia->id }}"
+                                                class="px-2 py-1 rounded-full text-sm font-semibold {{ $statusColor }}">
+                                                {{ ucfirst($denuncia->status) }}
+                                            </span>
+                                        </td>
 
-                                    <td class="px-6 py-4">
-                                        @php
-                                            $resolucion = \App\Models\Resolucion::where('denuncia_id', $denuncia->id)->first();
-                                        @endphp
-                                        @if ($resolucion)
-                                            <button onclick="downloadExpediente('{{ $resolucion->pdf }}')" class="bg-sky-900 hover:bg-sky-900 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 text-white font-semibold px-4 py-2 rounded-lg shadow">
-                                                Ver Expediente
-                                            </button>
-                                        @else
-                                            <x-btn-link
-                                                class="bg-sky-500"
-                                                href="javascript:void(0);"
-                                                onclick="openModal({
+                                        <td class="px-6 py-4">
+                                            @php
+                                                $resolucion = \App\Models\Resolucion::where(
+                                                    'denuncia_id',
+                                                    $denuncia->id,
+                                                )->first();
+                                            @endphp
+                                            @if ($resolucion)
+                                                @include('app.reportes.modals.resolucion', ['resolucion' => $resolucion, 'denuncia' => $denuncia])
+                                                <a href="{{ route('generate-zip',['tenan'=>tenant()->tenancy_db_name]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                </a>                                                
+                                                <button onclick="downloadExpediente('{{ $resolucion->pdf }}')"
+                                                    class="bg-sky-900 hover:bg-sky-900 active:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300 text-white font-semibold px-4 py-2 rounded-lg shadow">
+                                                    Ver Expediente
+                                                </button>
+                                            @else
+                                                <x-btn-link class="bg-sky-500" href="javascript:void(0);"
+                                                    onclick="openModal({
                                                     id: '{{ $denuncia->id }}',
                                                     nombre_completo: '{{ $denuncia->nombre_completo }}',
                                                     personas_involucradas: '{{ $denuncia->personas_involucradas }}',
                                                     created_at: '{{ $denuncia->created_at }}',
                                                     responsable: '{{ $denuncia->responsable }}',
                                                     status: '{{ $denuncia->status }}'
-                                                })"
-                                            >
-                                                Cerrar Caso
-                                            </x-btn-link>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
+                                                })">
+                                                    Cerrar Caso
+                                                </x-btn-link>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -84,6 +92,7 @@
         </div>
     </div>
 
+    
 
     <!-- Modal -->
     <div id="detailModal" class="fixed inset-0 z-50 hidden bg-gray-800 bg-opacity-75 flex justify-center items-center">
@@ -94,8 +103,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- Incluir SweetAlert2 desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -138,8 +145,9 @@
 
         // Función para ver el expediente
         function openFileModal(pdfPath) {
-            if(pdfPath){
-                const url = `{{ route('file.reportes.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
+            if (pdfPath) {
+                const url = `{{ route('file.reportes.view', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace(
+                    'FILENAME_PLACEHOLDER', pdfPath);
                 window.location.href = url;
             } else {
                 console.error('Problemas con el archivo adjunto')
@@ -154,8 +162,9 @@
         function downloadExpediente(pdfPath) {
             console.log('PdfPath: ' + pdfPath);
 
-            if(pdfPath){
-                const url = `{{ route('file.reportes.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace('FILENAME_PLACEHOLDER', pdfPath);
+            if (pdfPath) {
+                const url = `{{ route('file.reportes.download', ['filename' => 'FILENAME_PLACEHOLDER']) }}`.replace(
+                    'FILENAME_PLACEHOLDER', pdfPath);
                 window.location.href = url;
             } else {
                 console.error('Problemas con el archivo adjunto')
@@ -228,7 +237,8 @@
                         const statusBadge = rowElement.querySelector(`#status-badge-${denunciaId}`);
                         if (statusBadge) {
                             statusBadge.textContent = 'Resuelta';
-                            statusBadge.className = 'px-2 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
+                            statusBadge.className =
+                                'px-2 py-1 rounded-full text-sm font-semibold bg-green-500 text-white';
                         } else {
                             console.error('Badge no encontrado');
                         }
@@ -275,12 +285,12 @@
             formData.append('denunciaId', denunciaId);
 
             fetch(`/denuncias/${denunciaId}/cerrar`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: formData
-            })
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

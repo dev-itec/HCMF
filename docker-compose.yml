@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
     app:
@@ -17,6 +17,8 @@ services:
             - APP_ENV=local
             - APP_DEBUG=true
             - APP_KEY=base64:VIZF4R/+MCw8CwD4C8F0pJ5EqJUBb74R4dFoeOxR/rE=
+        depends_on:
+            - db
 
     web:
         image: nginx:alpine
