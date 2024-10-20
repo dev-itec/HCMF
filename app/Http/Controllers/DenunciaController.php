@@ -24,6 +24,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
+
 class DenunciaController extends Controller
 {
     public function create()
@@ -32,9 +33,9 @@ class DenunciaController extends Controller
         return view('denuncia.create');
     }
 
-    public function store(Request $request)
+    /*public function store(Request $request)
     {
-        // Validar los datos del formulario
+        // Validar los campos del formulario
         $validated = $request->validate([
             'nombre_completo' => 'required|string|max:255',
             'correo_electronico' => 'nullable|email',
@@ -45,7 +46,7 @@ class DenunciaController extends Controller
             'fecha_aproximada' => 'nullable|date',
             'hora_incidente' => 'nullable|date_format:H:i',
             'lugar_incidente' => 'nullable|string',
-            'descripcion_caso' => 'nullable|string',
+            'descripcion_caso' => 'nullable|string|max:3000',
             'personas_involucradas' => 'nullable|string',
             'testigos' => 'nullable|string',
             'como_se_entero' => 'nullable|string',
@@ -57,8 +58,10 @@ class DenunciaController extends Controller
             'accion_esperada' => 'nullable|array',
             'accion_esperada_otra' => 'nullable|string',
             'evidencia' => 'nullable|array',
-            'evidencia.*' => 'file|max:100000',
+            'evidencia_archivos.*' => 'file|max:102400', // Validación para archivos (100MB)
         ]);
+
+        $descripcionCaso = str_replace(["\r\n", "\r", "\n"], ' ', $request->input('descripcion_caso'));
 
         // Generar un identificador y clave únicos
         $identificador = strtoupper(bin2hex(random_bytes(8))); // Genera un código hexadecimal de 12 dígitos
@@ -101,7 +104,7 @@ class DenunciaController extends Controller
             'fecha_aproximada' => $request->input('fecha_aproximada'),
             'hora_incidente' => $request->input('hora_incidente'),
             'lugar_incidente' => $request->input('lugar_incidente'),
-            'descripcion_caso' => $request->input('descripcion_caso'),
+            'descripcion_caso' => $descripcionCaso,
             'personas_involucradas' => $request->input('personas_involucradas'),
             'testigos' => $request->input('testigos'),
             'como_se_entero' => $request->input('como_se_entero'),
@@ -133,104 +136,33 @@ class DenunciaController extends Controller
         // Redirigir a la vista de completado con los datos de identificador y clave
         return redirect()->route('denuncia.completado', ['identificador' => $identificador, 'clave' => $clave])
             ->with('success', '¡Denuncia enviada con éxito!');
-    }
-
-
-    /*public function store(Request $request)
-    {
-        // Validar los datos del formulario
-        $validated = $request->validate([
-            'nombre_completo' => 'required|string|max:255',
-            'correo_electronico' => 'nullable|email',
-            'relacion' => 'required|string',
-            'tipo_denuncia' => 'nullable|array',
-            'detalles_incidente' => 'nullable|string',
-            'fecha_exacta' => 'nullable|date',
-            'fecha_aproximada' => 'nullable|date',
-            'hora_incidente' => 'nullable|date_format:H:i',
-            'lugar_incidente' => 'nullable|string',
-            'descripcion_caso' => 'nullable|string',
-            'personas_involucradas' => 'nullable|string',
-            'testigos' => 'nullable|string',
-            'como_se_entero' => 'nullable|string',
-            'como_se_entero_otro' => 'nullable|string',
-            'impacto_empresa' => 'nullable|array',
-            'impacto_empresa_otro' => 'nullable|string',
-            'impacto_personal' => 'nullable|array',
-            'impacto_personal_otro' => 'nullable|string',
-            'accion_esperada' => 'nullable|array',
-            'accion_esperada_otra' => 'nullable|string',
-            'evidencia.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp3,mp4,zip|max:10240',
-        ]);
-
-        DB::beginTransaction(); // Inicia una transacción
-
-        try {
-            // Generar un identificador y clave únicos
-            $identificador = strtoupper(bin2hex(random_bytes(8))); // Genera un código hexadecimal de 12 dígitos
-            $clave = bin2hex(random_bytes(3)); // Genera un código hexadecimal de 6 dígitos
-
-            // Manejar los archivos de evidencia
-            $evidenciaPaths = [];
-            if ($request->hasFile('evidencia')) {
-                foreach ($request->file('evidencia') as $file) {
-                    $timestamp = now()->format('His');
-                    $uniqueId = uniqid(); // Genera un ID único basado en el tiempo actual
-                    $filename = "{$identificador}_{$timestamp}_{$uniqueId}." . $file->getClientOriginalExtension();
-                    $destinationPath = storage_path("/evidencias");
-
-                    // Crear directorio si no existe
-                    File::ensureDirectoryExists($destinationPath, 0755, true);
-
-                    // Mover el archivo a la carpeta de evidencias
-                    $file->move($destinationPath, $filename);
-
-                    // Almacenar el nombre del archivo
-                    $evidenciaPaths[] = "{$filename}";
-                }
-            }
-
-            // Guardar los datos del formulario en la base de datos
-            $answer = Answer::create([
-                'identificador' => $identificador,
-                'clave' => $clave,
-                'nombre_completo' => $request->input('nombre_completo'),
-                'rut' => $request->input('rut'),
-                'genero' => $request->input('genero'),
-                'cargo' => $request->input('cargo'),
-                'correo_electronico' => $request->input('correo_electronico'),
-                'relacion' => $request->input('relacion'),
-                'tipo_denuncia' => $request->input('tipo_denuncia'),
-                'detalles_incidente' => $request->input('detalles_incidente'),
-                'fecha_exacta' => $request->input('fecha_exacta'),
-                'fecha_aproximada' => $request->input('fecha_aproximada'),
-                'hora_incidente' => $request->input('hora_incidente'),
-                'lugar_incidente' => $request->input('lugar_incidente'),
-                'descripcion_caso' => $request->input('descripcion_caso'),
-                'personas_involucradas' => $request->input('personas_involucradas'),
-                'testigos' => $request->input('testigos'),
-                'como_se_entero' => $request->input('como_se_entero'),
-                'como_se_entero_otro' => $request->input('como_se_entero_otro'),
-                'impacto_empresa' => $request->input('impacto_empresa'),
-                'impacto_empresa_otro' => $request->input('impacto_empresa_otro'),
-                'impacto_personal' => $request->input('impacto_personal'),
-                'impacto_personal_otro' => $request->input('impacto_personal_otro'),
-                'accion_esperada' => $request->input('accion_esperada'),
-                'accion_esperada_otra' => $request->input('accion_esperada_otra'),
-                'evidencia' => json_encode($evidenciaPaths), // Guardar las rutas de evidencia como JSON
-            ]);
-
-            DB::commit(); // Confirmar la transacción
-
-            // Redirigir a la vista de completado con los datos de identificador y clave
-            return redirect()->route('denuncia.completado', ['identificador' => $identificador, 'clave' => $clave])
-                ->with('success', '¡Denuncia enviada con éxito!');
-        } catch (\Exception $e) {
-            DB::rollBack(); // Revertir la transacción si algo falla
-
-            return redirect()->back()->withErrors('Error al procesar la denuncia. Inténtalo de nuevo.');
-        }
     }*/
+
+    public function store(Request $request)
+    {
+        $questions = Question::where('status', 'activo')->orderBy('order')->get();
+        $respuestas = [];
+
+        foreach ($questions as $question) {
+            $respuesta = $request->input($question->name); // Asumiendo que cada campo tiene un name único
+            $respuestas[$question->name] = $respuesta;
+        }
+
+        $evidencia = [];
+        if ($request->hasFile('evidencia')) {
+            foreach ($request->file('evidencia') as $file) {
+                $evidencia[] = $file->store('evidencias');
+            }
+        }
+
+        DynamicAnswer::create([
+            'identificador' => $this->generateIdentifier(), // Método que ya usas
+            'clave' => $this->generateKey(), // Método que ya usas
+            'respuesta' => json_encode($respuestas),
+            'evidencia' => json_encode($evidencia),
+            'status' => 'Pendiente', // Estado inicial
+        ]);
+    }
 
 
     public function completado(Request $request)
@@ -417,18 +349,24 @@ class DenunciaController extends Controller
         ]);
 
         $evidenciaPaths = [];
+        $tenantFolder = storage_path("storage/tenant{$denuncia->tenant_id}/evidencias"); // Ruta donde se almacenarán los archivos
 
         // Comprobar si se subieron archivos
         if ($request->hasFile('evidencia')) {
+            // Crear el directorio si no existe
+            if (!File::exists($tenantFolder)) {
+                File::makeDirectory($tenantFolder, 0755, true);
+            }
+
             foreach ($request->file('evidencia') as $file) {
                 $timestamp = now()->format('His');
-                $filename = "{$identificador}_{$timestamp}." . $file->getClientOriginalExtension();
-                $destinationPath = 'evidencias'; // Dentro de storage/app/evidencias
+                $uniqueId = uniqid(); // Genera un ID único basado en el tiempo actual
+                $filename = "{$identificador}_{$timestamp}_{$uniqueId}." . $file->getClientOriginalExtension();
 
-                // Mover el archivo al directorio de almacenamiento usando el Storage de Laravel
-                $file->storeAs($destinationPath, $filename);
+                // Mover el archivo a la carpeta de evidencias
+                $file->move($tenantFolder, $filename);
 
-                // Almacenar el nombre del archivo para la base de datos
+                // Almacenar solo el nombre del archivo en el array
                 $evidenciaPaths[] = $filename;
             }
 
@@ -447,7 +385,7 @@ class DenunciaController extends Controller
         }
 
         // Manejar si no se subieron archivos
-        return back()->withErrors('No se seleccionaron archivos para subir.');
+        return back()->withErrors(['No se seleccionaron archivos para subir.']);
     }
 
     public function uploadEvidencia(Request $request)
@@ -480,7 +418,6 @@ class DenunciaController extends Controller
             }
         }
 
-        // Retornar respuesta con los archivos subidos
         return response()->json([
             'files' => $evidenciaPaths,
             'message' => 'Archivos subidos correctamente.'
@@ -506,10 +443,20 @@ class DenunciaController extends Controller
     {
         $denuncia = Answer::findOrFail($id);
 
-        // Generar el PDF a partir de una vista
-        $pdf = Pdf::loadView('app.denuncias.pdf', compact('denuncia'));
+        $imagePath = public_path('img/logo_hcm.png');
+
+        $imageData = base64_encode(file_get_contents($imagePath));
+
+        $src = 'data:image/png;base64,' . $imageData;
+
+        $pdf = Pdf::loadView('app.denuncias.pdf', compact('denuncia', 'src'));
+
+        $pdf->setOption('footer-center', 'Generado el ' . now()->format('d-m-Y'));
+        $pdf->setOption('footer-font-size', '10');
 
         return $pdf->download('denuncia_' . $denuncia->identificador . '.pdf');
     }
+
+
 
 }

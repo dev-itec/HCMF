@@ -12,7 +12,7 @@
                 <div class="p-6 text-gray-900">
                     <div class="relative overflow-x-auto">
                         <table class="w-full text-sm text-left text-gray-500">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                            <thead class="text-xs text-gray-700 capitalize bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3">Identificador</th>
                                 <th scope="col" class="px-6 py-3">Denunciante</th>
@@ -30,7 +30,7 @@
                                     </th>
                                     <td class="px-6 py-4">{{ $denuncia->nombre_completo }}</td>
                                     <td class="px-6 py-4">{{ $denuncia->personas_involucradas }}</td>
-                                    <td class="px-6 py-4">{{ Auth::user()->email }}</td>
+                                    <td class="px-6 py-4">{{ $denuncia->responsable }}</td>
                                     <td class="px-6 py-4 text-xs">
                                         @php
                                             $statusColor = match($denuncia->status) {
@@ -81,13 +81,19 @@
                                             <i class="fas fa-eye"></i>
                                         </x-btn-link>
 
-                                        {{--<!-- Botón para descargar en PDF -->
+                                        <!-- Botón para descargar en PDF -->
                                         <x-btn-link
                                             class="bg-sky-900 hover:bg-sky-950"
                                             href="{{ route('denuncia.pdf', ['id' => $denuncia->id]) }}"
                                         >
                                             <i class="fas fa-file-pdf"></i>
-                                        </x-btn-link>--}}
+                                        </x-btn-link>
+                                        <x-btn-link
+                                            class="bg-gray-400 hover:bg-gray-500"
+                                            href="#"
+                                        >
+                                            <i class="fas fa-upload"></i>
+                                        </x-btn-link>
                                     </td>
                                 </tr>
                             @endforeach
@@ -143,7 +149,6 @@
             archivosAdjuntos.forEach((file, index) => {
                 const fileUrl = `${file.replace(/\\/g, '')}`;
 
-                // Generar las rutas únicas para cada archivo
                 const routeUrl = `{{ route('file.view', ['filename' => ':filename']) }}`.replace(':filename', fileUrl);
                 const routeDownloadPdf = `{{ route('file.download', ['filename' => ':filename']) }}`.replace(':filename', fileUrl);
 
@@ -166,92 +171,95 @@
         const content = `
     <div>
         <h6 class="text-sm font-semibold">Denunciante:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.nombre_completo}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.nombre_completo || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">R.U.T:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.rut}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.rut || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Género:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.genero}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.genero || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Cargo:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.cargo}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.cargo || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Correo electrónico:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.correo_electronico}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.correo_electronico || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Relación con la empresa:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.relacion}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.relacion || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Tipo de Denuncia:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.tipo_denuncia}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.tipo_denuncia || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Fecha Aproximada:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.fecha_aproximada}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.fecha_aproximada || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Hora del Incidente:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.hora_incidente}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.hora_incidente || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Lugar del Incidente:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.lugar_incidente}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.lugar_incidente || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Descripción del Caso o Denuncia:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.descripcion_caso}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.descripcion_caso || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Persona(s) Involucrada(s):</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.personas_involucradas}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.personas_involucradas || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Testigos:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.testigos}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.testigos || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">¿Cómo se dio cuenta de esta situación?:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.como_se_entero}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.como_se_entero || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Impacto en la Empresa:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.impacto_empresa}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.impacto_empresa || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Impacto Personal:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.impacto_personal}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.impacto_personal || 'NO REFIERE'}</span>
     </div>
 
     <div>
         <h6 class="text-sm font-semibold">Acción Esperada:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.accion_esperada}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.accion_esperada || 'NO REFIERE'}</span>
     </div>
     <div>
         <h6 class="text-sm font-semibold">Fecha de Denuncia:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at || 'NO REFIERE'}</span>
     </div>
-    <div class="col-span-2">
+    <div >
         ${evidenciaContent}
+    </div>
+    <div >
+            ${evidenciaContent}
     </div>
 
     <div>
         <h6 class="text-sm font-semibold mt-3">Estado Actual:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.status}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.status || 'NO REFIERE'}</span>
     </div>
     ${denuncia.status !== 'resuelta' ? `
     <div>
@@ -266,13 +274,14 @@
     ` : ''}
     <div class="col-span-2">
         <h6 class="text-sm font-semibold mt-3">Responsable:</h6>
-        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.responsable || ''}</span>
+        <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.responsable || 'NO REFIERE'}</span>
     </div>
     `;
 
         document.getElementById('modalContent').innerHTML = content;
         document.getElementById('detailModal').classList.remove('hidden');
     }
+
 
     function downloadFile(fileUrl) {
         const link = document.createElement('a');
