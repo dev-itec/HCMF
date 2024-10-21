@@ -3,7 +3,8 @@ namespace App\Http\Controllers;
 
 use App\Models\FormField;
 use Illuminate\Http\Request;
-use App\Models\FormSubmission;
+// use App\Models\FormSubmission;
+use App\Models\Answers;
 
 class FormFieldController extends Controller
 {
@@ -15,10 +16,10 @@ class FormFieldController extends Controller
                            ->get()
                            ->groupBy('category');
 
-                           $formSubmissions = FormSubmission::all(); // esto trae toda la data del json
+                           $formSubmissions = Answers::all(); // esto trae toda la data del json
 
 
-        return view('forms.form', compact('fields', 'formSubmissions'));
+        return view('app.forms.form', compact('fields', 'formSubmissions'));
     }
 
      
@@ -32,7 +33,7 @@ class FormFieldController extends Controller
     // ]);
 
     // json pa la BD
-    FormSubmission::create([
+    Answers::create([
         'data' => json_encode($request->all()),
     ]);
 

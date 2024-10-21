@@ -13,6 +13,7 @@ use MailerSend\Helpers\Builder\Personalization;
 use MailerSend\LaravelDriver\MailerSendTrait;
 use App\Mail\DenunciaRecibida;
 use App\Models\Tenant;
+use App\Models\FormField;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
@@ -28,8 +29,19 @@ class DenunciaController extends Controller
 {
     public function create()
     {
+        $fields = FormField::where('active', true)
+                        //    ->Select('label','type','category')
+                           ->orderBy('category')
+                           ->get()
+                           ->groupBy('category');
+
+                           $formSubmissions = FormField::all(); // esto trae toda la data del json
+
         // Devuelve la vista del formulario de denuncia
-        return view('denuncia.create');
+        return view('denuncia.create', [
+            'formSubmission' => $formSubmissions,
+            'fields' => $fields
+        ]);
     }
 
     public function store(Request $request)
@@ -58,6 +70,7 @@ class DenunciaController extends Controller
             'accion_esperada_otra' => 'nullable|string',
             'evidencia' => 'nullable|array',
             'evidencia.*' => 'file|max:100000',
+            'data' => 'nullable|array',
         ]);
 
         // Generar un identificador y clave únicos
@@ -84,6 +97,47 @@ class DenunciaController extends Controller
                 $evidenciaPaths[] = "{$filename}";
             }
         }
+
+        // Especifica los campos que deseas excluir
+$excludedFields = [
+    'identificador',
+    'nombre_completo',
+    'rut',
+    'genero',
+    'cargo',
+    'correo_electronico',
+    'relacion',
+    'tipo_denuncia',
+    'detalles_incidente',
+    'fecha_exacta',
+    'fecha_aproximada',
+    'hora_incidente',
+    'lugar_incidente',
+    'descripcion_caso',
+    'personas_involucradas',
+    'testigos',
+    'como_se_entero',
+    'como_se_entero_otro',
+    'impacto_empresa',
+    'impacto_empresa_otro',
+    'impacto_personal',
+    'impacto_personal_otro',
+    'accion_esperada',
+    'accion_esperada_otra',
+    'evidencia',
+    'g-recaptcha-response',
+    '_token',
+    'clave',
+    ''
+];
+
+// Guardar los datos en la base de datos
+$dataToStore = $request->all(); // Obtén todos los datos del formulario
+
+// Excluye los campos especificados
+foreach ($excludedFields as $field) {
+    unset($dataToStore[$field]);
+}
 
         // Guardar los datos en la base de datos
         Answer::create([
@@ -114,6 +168,7 @@ class DenunciaController extends Controller
             'accion_esperada_otra' => $request->input('accion_esperada_otra'),
             'evidencia' => json_encode($evidenciaPaths), // Guardar las rutas de evidencia como JSON
             'responsable' => $responsable->email, // Almacenar el email del usuario responsable
+            'data' => json_encode($dataToStore),
         ]);
 
         // Obtener fecha y hora del navegador (con la zona horaria del servidor)

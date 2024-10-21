@@ -41,6 +41,7 @@ class Answer extends Model
         'evidencia',
         'responsable',
         'status',
+        'data',
     ];
 
     // Para manejar los campos de tipo JSON
@@ -50,6 +51,7 @@ class Answer extends Model
         'impacto_personal' => 'array',
         'accion_esperada' => 'array',
         'evidencia' => 'array',
+        'data' => 'array',
     ];
     public function resolucion()
     {

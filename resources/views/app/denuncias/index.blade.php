@@ -75,7 +75,8 @@
                                                     como_se_entero: '{{ $denuncia->como_se_entero }}',
                                                     impacto_empresa: {{ json_encode($denuncia->impacto_empresa)}},
                                                     impacto_personal: {{ json_encode($denuncia->impacto_personal)}},
-                                                    accion_esperada: {{ json_encode($denuncia->accion_esperada)}}
+                                                    accion_esperada: {{ json_encode($denuncia->accion_esperada)}},
+                                                    data: {{ json_encode($denuncia->data)}}
                                                 })"
                                         >
                                             <i class="fas fa-eye"></i>
@@ -110,6 +111,7 @@
                 <h3 class="text-xl font-semibold">
                     Detalles de la Denuncia
                 </h3>
+                
                 <button onclick="closeModal()" class="text-gray-600 hover:text-gray-900">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
@@ -117,6 +119,7 @@
             <div id="modalContent" class="grid grid-cols-2 gap-4 mb-6"> <!-- Estilo de 2 columnas -->
                 <!-- Aquí se llenará la información con formato de formulario -->
             </div>
+            
             <!-- Modal Footer -->
             <div class="flex justify-end items-center space-x-4">
                 <button onclick="updateStatus()" class="bg-sky-500 text-white px-4 py-2 rounded flex items-center">
@@ -163,7 +166,30 @@
             evidenciaContent = '<h5 class="text-1xl font-semibold">Archivos Adjuntos:</h5><p class="text-sm text-gray-600">No hay archivos adjuntos</p>';
         }
 
+         // Parsear los datos de la denuncia
+    const dataObj = JSON.parse(denuncia.data);
+    let dataContent = '';
+
+    // Función para formatear la clave
+    function formatKey(key) {
+        return key.replace(/_/g, ' ')
+                  .split(' ')
+                  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                  .join(' ');
+    }
+
+    // Crear contenido dinámico para los campos del JSON
+    for (const [key, value] of Object.entries(dataObj)) {
+        dataContent += `
+                <div><h6 class="text-sm font-semibold">${formatKey(key)}:</h6> 
+                <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${value}</span></div>
+            `;
+    }
+    dataContent += '';
+
         const content = `
+        
+
     <div>
         <h6 class="text-sm font-semibold">Denunciante:</h6>
         <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.nombre_completo}</span>
@@ -245,6 +271,9 @@
         <h6 class="text-sm font-semibold">Fecha de Denuncia:</h6>
         <span class="text-sm font-bold tracking-wider uppercase dark:text-gray-600">${denuncia.created_at}</span>
     </div>
+
+    ${dataContent}
+
     <div class="col-span-2">
         ${evidenciaContent}
     </div>

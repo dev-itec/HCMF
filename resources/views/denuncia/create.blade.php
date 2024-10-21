@@ -68,6 +68,7 @@
 
     <form id="denunciaForm" action="{{ route('denuncia.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
+            
         @php
             $randomHex = bin2hex(random_bytes(3)); // Genera un código hexadecimal de 6 dígitos para la clave
             $randomCode = strtoupper(bin2hex(random_bytes(8))); // Genera un código hexadecimal de 12 dígitos para el identificador
@@ -77,6 +78,7 @@
             <!-- Campos ocultos para identificador y clave -->
         <input type="hidden" name="identificador" value="{{ $formattedHex }}">
         <input type="hidden" name="clave" value="{{ $randomHex }}">
+        <section id="Datosdenunciante">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Nombre completo -->
             <div>
@@ -127,6 +129,61 @@
             </select>
         </div>
 
+        @foreach ($fields as $category => $categoryFields)
+    @if ($category == 'Datos denunciante')
+
+        @foreach ($categoryFields as $field)
+            <div class="form-group mb-4 mt-4">
+                <label class="block text-gray-700 font-semibold" for="block text-gray-700 font-{{ str_replace(' ', '_', $field->label) }}">{{ $field->label }}</label>
+                
+                @if ($field->type == 'text')
+                    <input type="text" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'number')
+                    <input type="number" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'textarea')
+                    <textarea name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}"></textarea>
+
+                @elseif ($field->type == 'date')
+                    <input type="date" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'email')
+                    <input type="email" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'dropdown' && !empty($field->additional_info))
+                    <select name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <option value="{{ trim($option) }}">{{ ucfirst(trim($option)) }}</option>
+                        @endforeach
+                    </select>
+
+                @elseif ($field->type == 'checkbox' && !empty($field->additional_info))
+                    <div class="mt-2 space-y-2">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="{{ $field->label }}[]" value="{{ trim($option) }}" class="form-checkbox">
+                                <span class="ml-2">{{ ucfirst(trim($option)) }}</span>
+                            </label>
+                        @endforeach
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" value="Otro" class="form-checkbox" id="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" onclick="checkOtroOptionDynamic(this)">
+                            <span class="ml-2">Otro</span>
+                        </label>
+                        <input type="text" maxlength="100" name="{{ str_replace(' ', '_', $field->label) }}_otro" id="{{ str_replace(' ', '_', $field->label) }}_otro" placeholder="Especifique si eligió 'Otro'" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 hidden">
+                    </div>
+
+                @endif
+            </div>
+        @endforeach
+
+        <hr>
+    @endif
+@endforeach
+
+</section>
+
+<section id="Tipodenuncia">
         <!-- Tipo de Denuncia -->
         <div>
             <label class="block text-gray-700 font-semibold">Tipo de Denuncia (Marque todas las que apliquen)</label>
@@ -212,6 +269,61 @@
             <input type="text" id="como_se_entero_otro" maxlength="100" name="como_se_entero_otro" placeholder="Especifique si eligió 'Otro'" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 hidden">
         </div>
 
+        @foreach ($fields as $category => $categoryFields)
+    @if ($category == 'Tipo denuncia')
+
+        @foreach ($categoryFields as $field)
+            <div class="form-group mb-4 mt-4">
+                <label class="block text-gray-700 font-semibold" for="block text-gray-700 font-{{ str_replace(' ', '_', $field->label) }}">{{ $field->label }}</label>
+                
+                @if ($field->type == 'text')
+                    <input type="text" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'number')
+                    <input type="number" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'textarea')
+                    <textarea name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}"></textarea>
+
+                @elseif ($field->type == 'date')
+                    <input type="date" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'email')
+                    <input type="email" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'dropdown' && !empty($field->additional_info))
+                    <select name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <option value="{{ trim($option) }}">{{ ucfirst(trim($option)) }}</option>
+                        @endforeach
+                    </select>
+
+                @elseif ($field->type == 'checkbox' && !empty($field->additional_info))
+                    <div class="mt-2 space-y-2">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="{{ $field->label }}[]" value="{{ trim($option) }}" class="form-checkbox">
+                                <span class="ml-2">{{ ucfirst(trim($option)) }}</span>
+                            </label>
+                        @endforeach
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" value="Otro" class="form-checkbox" id="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" onclick="checkOtroOptionDynamic(this)">
+                            <span class="ml-2">Otro</span>
+                        </label>
+                        <input type="text" maxlength="100" name="{{ str_replace(' ', '_', $field->label) }}_otro" id="{{ str_replace(' ', '_', $field->label) }}_otro" placeholder="Especifique si eligió 'Otro'" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 hidden">
+                    </div>
+
+                @endif
+            </div>
+        @endforeach
+
+        <hr>
+    @endif
+@endforeach
+
+        </section>
+
+        <section id="Impacto">
         <!-- Impacto en la empresa -->
         <div>
             <label class="block text-gray-700 font-semibold">¿Qué impacto tiene en la empresa y en usted esta denuncia?</label>
@@ -279,6 +391,60 @@
             </div>
             <input type="text" maxlength="100" name="accion_esperada_otra" id="accion_esperada_otra" placeholder="Especifique si eligió 'Otra'" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 hidden">
         </div>
+
+        @foreach ($fields as $category => $categoryFields)
+    @if ($category == 'Impacto')
+
+        @foreach ($categoryFields as $field)
+            <div class="form-group mb-4 mt-4">
+                <label class="block text-gray-700 font-semibold" for="block text-gray-700 font-{{ str_replace(' ', '_', $field->label) }}">{{ $field->label }}</label>
+                
+                @if ($field->type == 'text')
+                    <input type="text" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'number')
+                    <input type="number" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'textarea')
+                    <textarea name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}"></textarea>
+
+                @elseif ($field->type == 'date')
+                    <input type="date" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'email')
+                    <input type="email" name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+
+                @elseif ($field->type == 'dropdown' && !empty($field->additional_info))
+                    <select name="{{ str_replace(' ', '_', $field->label) }}" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" id="{{ str_replace(' ', '_', $field->label) }}">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <option value="{{ trim($option) }}">{{ ucfirst(trim($option)) }}</option>
+                        @endforeach
+                    </select>
+
+                @elseif ($field->type == 'checkbox' && !empty($field->additional_info))
+                    <div class="mt-2 space-y-2">
+                        @foreach (explode(',', $field->additional_info) as $option)
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" name="{{ $field->label }}[]" value="{{ trim($option) }}" class="form-checkbox">
+                                <span class="ml-2">{{ ucfirst(trim($option)) }}</span>
+                            </label>
+                        @endforeach
+                        <label class="inline-flex items-center">
+                            <input type="checkbox" name="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" value="Otro" class="form-checkbox" id="{{ str_replace(' ', '_', $field->label) }}_otro_checkbox" onclick="checkOtroOptionDynamic(this)">
+                            <span class="ml-2">Otro</span>
+                        </label>
+                        <input type="text" maxlength="100" name="{{ str_replace(' ', '_', $field->label) }}_otro" id="{{ str_replace(' ', '_', $field->label) }}_otro" placeholder="Especifique si eligió 'Otro'" class="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 hidden">
+                    </div>
+
+                @endif
+            </div>
+        @endforeach
+
+        <hr>
+    @endif
+@endforeach
+
+        </section>
 
         <!-- Adjuntar evidencia -->
         <div>
@@ -482,6 +648,23 @@
             otroInput.classList.add('hidden');
         }
     }
+    function checkOtroOptionDynamic(checkbox) {
+    // Genera el ID del input "Otro" relacionado
+    const otroInputId = checkbox.id.replace('_checkbox', ''); // Remueve '_checkbox' para obtener el ID del input
+    const otroInput = document.getElementById(otroInputId);
+    
+    // Verifica si el input "Otro" existe
+    if (otroInput) {
+        // Verifica si el checkbox "Otro" está seleccionado
+        if (checkbox.checked) {
+            otroInput.classList.remove('hidden');
+        } else {
+            otroInput.classList.add('hidden');
+        }
+    } else {
+        console.error(`El input con ID ${otroInputId} no fue encontrado.`);
+    }
+}
     function validateFiles() {
         const input = document.getElementById('evidencia');
         const fileError = document.getElementById('fileError');

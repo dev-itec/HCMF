@@ -72,6 +72,9 @@ Route::middleware([
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 
+        Route::get('/dynamic-form', [DenunciaController::class, 'showForm'])->name('show.form');
+        Route::post('/dynamic-form', [DenunciaController::class, 'submitForm'])->name('submit.form');
+
 
         Route::get('/denuncias', [MenuController::class, 'denuncias'])->name('denuncias.index');
         Route::post('/denuncias/{id}/status', [DenunciaController::class, 'updateStatus']);
