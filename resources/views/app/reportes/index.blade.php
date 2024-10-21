@@ -58,7 +58,7 @@
                                             @endphp
                                             @if ($resolucion)
                                                 @include('app.reportes.modals.resolucion', ['resolucion' => $resolucion, 'denuncia' => $denuncia])
-                                                <a href="{{ route('generate-zip',['tenan'=>tenant()->tenancy_db_name]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                <a href="{{ route('generate-zip',['tenan'=>tenant()->tenancy_db_name, 'denuncia_id'=>$denuncia->id]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                                     <i class="fa fa-download" aria-hidden="true"></i>
                                                 </a>                                                
                                                 <button onclick="downloadExpediente('{{ $resolucion->pdf }}')"

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use App\Http\Controllers\App\UserPasswordController;
+use App\Http\Controllers\GenerateZipControlador;
 
 
 /*
@@ -74,6 +75,7 @@ Route::middleware([
 
 
     Route::middleware('auth')->group(function () {
+        Route::get('/generate-zip', GenerateZipControlador::class)->name('generate-zip');
         Route::get('/dashboard', [MenuController::class, 'index'])->name('dashboard');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

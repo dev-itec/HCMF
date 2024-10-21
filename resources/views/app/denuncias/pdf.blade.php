@@ -68,6 +68,11 @@
     <tr>
         <td><strong>Detalle del incidente:</strong> {{$denuncia->descripcion_caso}}</td>
     </tr>
+    @if($showComment)
+        <tr>
+            <td><strong>Resolución:</strong> {{$texto_resolucion}} cambiar</td>
+        </tr>
+    @endif
 </table>
 
 <!-- Pie de página -->

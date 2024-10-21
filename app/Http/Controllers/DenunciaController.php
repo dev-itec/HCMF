@@ -448,8 +448,8 @@ class DenunciaController extends Controller
         $imageData = base64_encode(file_get_contents($imagePath));
 
         $src = 'data:image/png;base64,' . $imageData;
-
-        $pdf = Pdf::loadView('app.denuncias.pdf', compact('denuncia', 'src'));
+        $showComment = false;
+        $pdf = Pdf::loadView('app.denuncias.pdf', compact('denuncia', 'src', 'showComment'));
 
         $pdf->setOption('footer-center', 'Generado el ' . now()->format('d-m-Y'));
         $pdf->setOption('footer-font-size', '10');

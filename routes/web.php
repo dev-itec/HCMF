@@ -3,7 +3,6 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TenantController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GenerateZipControlador;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +30,6 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('tenants', TenantController::class);
 
-    Route::get('/generate-zip', GenerateZipControlador::class)->name('generate-zip');
 
 });
 
