@@ -70,7 +70,7 @@
     </tr>
     @if($showComment)
         <tr>
-            <td><strong>Resolución:</strong> {{$texto_resolucion}} cambiar</td>
+            <td><strong>Resolución:</strong> {{$texto_resolucion}}</td>
         </tr>
     @endif
 </table>
